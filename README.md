@@ -8,6 +8,8 @@ Moderationskarten für Workshops und Vorträge auf dem iPad: Moderationsmodus, L
 |---|---|
 | dieser Ordner (`~/Repositories/Moderationsdecks`) | die App, öffentlich über GitHub Pages |
 | `prototyp/` | der erste Prototyp als einzelne HTML-Datei |
+| `.claude/skills/moderationskarten/` | der Skill: macht aus Konzepten Workshop-Dateien |
+| `tools/pruefen.js` | prüft eine Workshop-Datei: `node tools/pruefen.js <datei.md>` |
 | Dropbox: `00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops/` | **die Workshops**, eine Markdown-Datei pro Workshop, privat |
 
 Die Workshops liegen bewusst nicht hier. Die App liest sie direkt aus der Dropbox und speichert sie auf dem iPad für offline.
