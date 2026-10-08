@@ -32,6 +32,7 @@
   --pink: #FF1693;
   --on-pink: #FFFFFF;
   --falle: #E3157E;
+  --grey: color-mix(in srgb, var(--ink) 13%, var(--surface));
   --falle-bg: color-mix(in srgb, var(--falle) 20%, var(--surface));
   --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
   --solid: #092F26;
@@ -81,6 +82,7 @@ h1, h2 { text-wrap: balance; }
 .badge { display: inline-flex; align-items: center; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; border-radius: 6px; padding: .28em .7em; font-size: .8rem; white-space: nowrap; }
 .badge.sprechen { background: var(--lime); color: var(--on-lime); }
 .badge.aktiv { background: var(--violet); color: var(--on-violet); }
+.badge.pause { background: var(--grey); color: var(--ink); }
 
 /* ---------- start screen ---------- */
 .home { max-width: 1080px; margin: 0 auto; padding-inline: max(20px, env(safe-area-inset-left, 0px)); padding-block: max(20px, env(safe-area-inset-top, 0px)) 56px; display: grid; gap: 36px; }
@@ -95,6 +97,7 @@ h1, h2 { text-wrap: balance; }
 .flow { display: flex; gap: 3px; height: 16px; max-width: 720px; }
 .flow i { display: block; border-radius: 3px; min-width: 4px; }
 .flow i.sprechen, .brand-mark i.sprechen { background: var(--lime); }
+.flow i.pause { background: var(--grey); }
 .flow i.aktiv, .brand-mark i.aktiv { background: var(--violet); }
 .brand-mark i.falle { background: var(--falle); }
 .legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: .88rem; color: var(--ink-2); }
@@ -133,6 +136,11 @@ h1, h2 { text-wrap: balance; }
 .card { --pad: clamp(18px, 2.4vw, 34px); border-radius: 18px; border: 1px solid var(--line); background: var(--surface); padding: var(--pad); overflow: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: calc(var(--fs) * 15px); min-height: 0; }
 .card.sprechen { background: var(--tint-sprechen); }
 .card.aktiv { background: var(--tint-aktiv); }
+.card.pause { background: var(--surface); }
+.c-block { font-size: calc(var(--fs) * .95rem); font-weight: 700; letter-spacing: .02em; color: var(--ink-2); margin-bottom: -.4em; }
+.c-goal { font-size: calc(var(--fs) * 1rem); color: var(--ink-2); margin-top: -.3em; }
+.c-goal b { font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: .8em; margin-right: .4em; }
+li.rahmen { list-style: none; font-style: italic; }
 .card.anim { animation: in .22s ease-out; }
 .card.anim.back { animation-name: in-back; }
 @keyframes in { from { transform: translateX(30px); opacity: .35; } to { transform: none; opacity: 1; } }
@@ -162,7 +170,7 @@ li.hid::marker { color: transparent; }
 
 .timeline { grid-column: 2; grid-row: 2; display: flex; gap: 3px; height: 6px; margin-bottom: 8px; }
 .timeline i { display: block; border-radius: 3px; min-width: 4px; opacity: .4; }
-.timeline i.sprechen { background: var(--lime); } .timeline i.aktiv { background: var(--violet); }
+.timeline i.sprechen { background: var(--lime); } .timeline i.aktiv { background: var(--violet); } .timeline i.pause { background: var(--grey); }
 .timeline i.done { opacity: .85; }
 .timeline i.now { opacity: 1; outline: 2px solid var(--ink); outline-offset: 1px; }
 .pr-sub { font-size: 1.02rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -178,6 +186,12 @@ li.hid::marker { color: transparent; }
 .ov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
 .ov { text-align: left; border-radius: 12px; border: 2px solid transparent; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-height: 110px; background: var(--surface); }
 .ov.sprechen { background: var(--tint-sprechen); } .ov.aktiv { background: var(--tint-aktiv); }
+.ov-block { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 10px 2px 0; }
+.ov-block b { font-size: 1.05rem; }
+.ov-block span { color: var(--ink-2); font-size: .9rem; }
+.ag-block { display: grid !important; gap: 2px; padding: 16px 2px 4px; }
+.ag-block b { font-size: 1.1rem; }
+.ag-block span { color: var(--ink-2); font-size: .92rem; }
 .ov.now { border-color: var(--ink); }
 .ov-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: .82rem; color: var(--ink-2); font-weight: 500; }
 .ov .badge { font-size: .68rem; }
@@ -291,7 +305,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
   var APP_KEY = 'prtle6jx22kouds';
   var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
-  var VERSION = '1.1';
+  var VERSION = '1.2';
 
   var SAMPLE = [
     '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
@@ -310,11 +324,12 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     '- Jede Person nennt einen Prompt, den sie ausprobiert', '- Danke sagen', ''
   ].join('\n');
 
-  var FORMAT_HELP = '# Titel des Workshops\nUntertitel: Anlass, Kunde, Datum\n\n## Kartentitel | 10 min | Ich spreche   (oder: TN aktiv)\n> Satz, den ich wörtlich sage\n- Kernpunkt\n1. Schritt der Anleitung\n! Achtung Falle: worauf ich achten muss\nNotiz: nur für mich';
+  var FORMAT_HELP = '# Titel des Workshops\nUntertitel: Anlass, Kunde, Datum\n\n## Block 1 · Name des Blocks | 25 min      (Blöcke sind freiwillig)\nZiel: steht klein auf jeder Karte des Blocks\n\n### Kartentitel | 10 min | Ich spreche     (oder: TN aktiv, Pause)\n> Satz, den ich wörtlich sage\n- Kernpunkt\n1. Schritt der Anleitung\nRahmen: Satz an die Gruppe, gehört zur Anleitung\n! Achtung Falle: worauf ich achten muss\nNotiz: nur für mich\nMaterial: erscheint in der Packliste\n\nOhne Blöcke beginnt jede Karte mit ## statt ###.';
 
   var ART = {
     sprechen: { label: 'Ich spreche', say: 'Sagen', steps: 'Ablauf' },
-    aktiv: { label: 'TN aktiv', say: 'Anmoderation', steps: 'Anleitung' }
+    aktiv: { label: 'TN aktiv', say: 'Anmoderation', steps: 'Anleitung' },
+    pause: { label: 'Pause', say: 'Sagen', steps: 'Ablauf' }
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -333,13 +348,14 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* ---------- Inhalt lesen ---------- */
   function artOf(s) {
     s = String(s || '').toLowerCase();
+    if (/pause/.test(s)) return 'pause';
     if (/aktiv|\btn\b|übung|uebung|teilnehm/.test(s)) return 'aktiv';
     if (/sprech|input|impuls|vortrag|\bich\b/.test(s)) return 'sprechen';
     return null;
   }
   function header(h) {
     var parts = h.split('|').map(function (s) { return s.trim(); });
-    var c = { title: parts[0], minutes: 0, art: null, say: [], points: [], steps: [], fallen: [], material: '', note: [] };
+    var c = { title: parts[0], minutes: 0, art: null, say: [], points: [], steps: [], fallen: [], material: '', note: [], goal: '', block: null };
     parts.slice(1).forEach(function (p) {
       var m = p.match(/^(\d+)\s*(min\.?|minuten|′|')?$/i);
       if (m) c.minutes = parseInt(m[1], 10); else { var a = artOf(p); if (a) c.art = a; }
@@ -351,7 +367,9 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     if ((m = l.match(/^>\s?(.*)/))) { if (m[1]) c.say.push(m[1]); }
     else if ((m = l.match(/^!\s*(?:achtung\s*)?(?:falle\s*:?\s*)?(.*)/i))) { if (m[1]) c.fallen.push(m[1]); }
     else if ((m = l.match(/^(?:achtung\s*)?falle\s*:\s*(.*)/i))) c.fallen.push(m[1]);
-    else if ((m = l.match(/^\d+[.)]\s+(.*)/))) c.steps.push(m[1]);
+    else if ((m = l.match(/^rahmen\s*:\s*(.*)/i))) { if (m[1]) c.steps.push({ t: m[1], r: true }); }
+    else if ((m = l.match(/^ziel\s*:\s*(.*)/i))) c.goal = m[1];
+    else if ((m = l.match(/^\d+[.)]\s+(.*)/))) c.steps.push({ t: m[1], r: false });
     else if ((m = l.match(/^[-*•–]\s+(.*)/))) { if (m[1]) c.points.push(m[1]); }
     else if ((m = l.match(/^materiale?(?:ien)?\s*:\s*(.*)/i))) c.material = m[1];
     else if ((m = l.match(/^notiz\s*:\s*(.*)/i))) { if (m[1]) c.note.push(m[1]); }
@@ -359,31 +377,45 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     else if ((m = l.match(/^(?:art|typ)\s*:\s*(.*)/i))) { var a = artOf(m[1]); if (a) c.art = a; }
     else if (!/^-$|^>$/.test(l)) c.points.push(l);
   }
+  function blockShown(c) { return !!(c.block && c.block.title !== c.title); }
+  function hasBlocks(lines) { return lines.some(function (l) { return /^###\s/.test(l.trim()); }); }
   function parse(md) {
-    var deck = { title: '', sub: '', cards: [] }, cur = null;
-    String(md || '').replace(/\r/g, '').split('\n').forEach(function (raw) {
+    var lines = String(md || '').replace(/\r/g, '').split('\n'), blocks = hasBlocks(lines);
+    var deck = { title: '', sub: '', cards: [], blocks: blocks }, cur = null, blk = null;
+    lines.forEach(function (raw) {
       var l = raw.trim(), m;
       if (!l) return;
       if ((m = l.match(/^#\s+(.*)/))) { deck.title = m[1]; return; }
-      if ((m = l.match(/^##+\s+(.*)/))) { cur = header(m[1]); deck.cards.push(cur); return; }
-      if (!cur) { m = l.match(/^untertitel\s*:\s*(.*)/i); if (m) deck.sub = m[1]; else if (!deck.sub) deck.sub = l; return; }
+      if (blocks && (m = l.match(/^##\s+(.*)/))) { var hb = header(m[1]); blk = { title: hb.title, minutes: hb.minutes, goal: '' }; cur = null; return; }
+      if ((m = l.match(blocks ? /^###+\s+(.*)/ : /^##+\s+(.*)/))) { cur = header(m[1]); cur.block = blk; deck.cards.push(cur); return; }
+      if (!cur) {
+        if (blk) { m = l.match(/^ziel\s*:\s*(.*)/i); if (m) blk.goal = m[1]; return; }
+        m = l.match(/^untertitel\s*:\s*(.*)/i); if (m) deck.sub = m[1]; else if (!deck.sub) deck.sub = l; return;
+      }
       addLine(cur, l);
     });
-    deck.cards.forEach(function (c) { if (!c.art) c.art = c.steps.length ? 'aktiv' : 'sprechen'; });
+    deck.cards.forEach(function (c) {
+      if (!c.art) c.art = c.steps.length ? 'aktiv' : 'sprechen';
+      if (!c.goal && c.block) c.goal = c.block.goal;
+    });
     return deck;
   }
-  /* Abschnitte einer Datei: eine Karte = von "## ..." bis vor die nächste "## ..." */
+  /* Abschnitte einer Datei: eine Karte = von ihrer Überschrift bis vor die nächste Überschrift (Karte oder Block) */
   function sectionBounds(text) {
-    var lines = text.replace(/\r/g, '').split('\n'), idx = [];
-    lines.forEach(function (l, i) { if (/^##+\s/.test(l.trim())) idx.push(i); });
+    var lines = text.replace(/\r/g, '').split('\n'), idx = [], re = hasBlocks(lines) ? /^###+\s/ : /^##+\s/;
+    lines.forEach(function (l, i) { if (re.test(l.trim())) idx.push(i); });
     return { lines: lines, idx: idx };
   }
+  function sectionEnd(b, i) {
+    for (var k = b.idx[i] + 1; k < b.lines.length; k++) if (/^#{1,6}\s/.test(b.lines[k].trim())) return k;
+    return b.lines.length;
+  }
   function getSection(text, i) {
-    var b = sectionBounds(text), s = b.idx[i], e = i + 1 < b.idx.length ? b.idx[i + 1] : b.lines.length;
+    var b = sectionBounds(text), s = b.idx[i], e = sectionEnd(b, i);
     return b.lines.slice(s, e).join('\n').replace(/\s+$/, '');
   }
   function replaceSection(text, i, val) {
-    var b = sectionBounds(text), s = b.idx[i], e = i + 1 < b.idx.length ? b.idx[i + 1] : b.lines.length;
+    var b = sectionBounds(text), s = b.idx[i], e = sectionEnd(b, i);
     var mid = val.replace(/\s+$/, '');
     var out = b.lines.slice(0, s).concat(mid ? mid.split('\n').concat(['']) : [], b.lines.slice(e));
     return out.join('\n').replace(/\n{3,}/g, '\n\n').replace(/\s*$/, '\n');
@@ -573,7 +605,8 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     h += '<section class="agenda"><h2>Ablauf</h2>';
     if (!cs.length) h += '<p style="color:var(--ink-2)">Dieser Workshop hat noch keine Karten. Jede Karte beginnt mit „## Titel“.</p>';
     h += '<ol>' + cs.map(function (c, i) {
-      return '<li><button class="row" data-act="start" data-i="' + i + '"><span class="n num">' + (i + 1) + '</span>' +
+      var bh = (blockShown(c) && (i === 0 || cs[i - 1].block !== c.block)) ? '<li class="ag-block"><b>' + fmt(c.block.title) + '</b>' + (c.block.goal ? '<span>Ziel: ' + fmt(c.block.goal) + '</span>' : '') + '</li>' : '';
+      return bh + '<li><button class="row" data-act="start" data-i="' + i + '"><span class="n num">' + (i + 1) + '</span>' +
         '<span><span class="badge ' + c.art + '">' + ART[c.art].label + '</span></span>' +
         '<span class="t">' + fmt(c.title) + '</span>' +
         '<span class="f' + (c.fallen.length ? '' : ' none') + '">⚠ Falle</span>' +
@@ -600,7 +633,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* ---------- Bearbeiten ---------- */
   function openEditor(mode, i) {
     var f = fileByKey(S.cur); if (!f) return;
-    var text = mode === 'file' ? f.text : mode === 'card' ? getSection(f.text, i) : '## Neue Karte | 10 min | Ich spreche\n> \n- ';
+    var text = mode === 'file' ? f.text : mode === 'card' ? getSection(f.text, i) : (hasBlocks(f.text.split('\n')) ? '###' : '##') + ' Neue Karte | 10 min | Ich spreche\n> \n- ';
     var title = mode === 'file' ? 'Ganze Datei bearbeiten' : mode === 'card' ? 'Karte ' + (i + 1) + ' bearbeiten' : 'Neue Karte';
     S.edit = { mode: mode, i: i, key: f.key };
     $('sheetBox').className = 'sheet-box form';
@@ -723,6 +756,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   }
 
   function list(items, tag) { return '<' + tag + '>' + items.map(function (t) { return '<li class="rv">' + fmt(t) + '</li>'; }).join('') + '</' + tag + '>'; }
+  function stepList(items) { var n = 0; return '<ol>' + items.map(function (x) { return x.r ? '<li class="rv rahmen">' + fmt(x.t) + '</li>' : '<li class="rv" value="' + (++n) + '">' + fmt(x.t) + '</li>'; }).join('') + '</ol>'; }
   function render(animate, dir) {
     var cs = deck.cards, c = cs[P.idx], A = ART[c.art];
     var before = total(cs.slice(0, P.idx));
@@ -734,10 +768,12 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     $('nextBtn').disabled = P.idx >= cs.length - 1;
 
     var h = '<header class="c-head rv"><span class="badge ' + c.art + '">' + A.label + '</span>' + (c.minutes ? '<span class="c-min num">' + c.minutes + ' min</span>' : '') + '</header>';
+    if (blockShown(c)) h = '<p class="c-block">' + fmt(c.block.title) + '</p>' + h;
     h += '<h2 class="c-title">' + fmt(c.title) + '</h2>';
+    if (c.goal) h += '<p class="c-goal rv"><b>Ziel</b>' + fmt(c.goal) + '</p>';
     if (c.say.length) h += '<div class="c-say rv"><span class="c-lbl">' + A.say + '</span>' + c.say.map(fmt).join('<br>') + '</div>';
     var secs = [];
-    if (c.steps.length) secs.push('<section class="c-sec"><span class="c-lbl">' + A.steps + '</span>' + list(c.steps, 'ol') + '</section>');
+    if (c.steps.length) secs.push('<section class="c-sec"><span class="c-lbl">' + A.steps + '</span>' + stepList(c.steps) + '</section>');
     if (c.points.length) secs.push('<section class="c-sec"><span class="c-lbl">Kernpunkte</span>' + list(c.points, 'ul') + '</section>');
     if (c.art === 'sprechen') secs.reverse();
     if (secs.length) h += '<div class="c-cols">' + secs.join('') + '</div>';
@@ -775,7 +811,12 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     $('sheetBox').className = 'sheet-box';
     $('sheetBox').innerHTML = '<div class="sheet-head"><h2>Übersicht</h2><span class="num">' + cs.length + ' Karten · ' + dur(total(cs)) + '</span><button class="pbtn" data-act="close">Schließen</button></div>' +
       '<div class="ov-grid">' + cs.map(function (c, i) {
-        return '<button class="ov ' + c.art + (i === P.idx ? ' now' : '') + '" data-act="jump" data-i="' + i + '">' +
+        var bh = '';
+        if (blockShown(c) && (i === 0 || cs[i - 1].block !== c.block)) {
+          var bm = total(cs.filter(function (x) { return x.block === c.block; }));
+          bh = '<div class="ov-block"><b>' + fmt(c.block.title) + '</b><span class="num">' + dur(bm) + '</span></div>';
+        }
+        return bh + '<button class="ov ' + c.art + (i === P.idx ? ' now' : '') + '" data-act="jump" data-i="' + i + '">' +
           '<span class="ov-top"><span class="num">' + (i + 1) + (i === P.idx ? ' · jetzt' : '') + '</span><span class="num">' + (c.minutes ? c.minutes + ' min' : '') + '</span></span>' +
           '<span><span class="badge ' + c.art + '">' + ART[c.art].label + '</span></span>' +
           '<b>' + fmt(c.title) + '</b>' + (c.fallen.length ? '<span class="fl">⚠ Falle</span>' : '') + '</button>';

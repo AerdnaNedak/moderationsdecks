@@ -18,13 +18,20 @@ Die Workshops liegen bewusst nicht hier. Die App liest sie direkt aus der Dropbo
 # Titel des Workshops
 Untertitel: Anlass, Kunde, Datum
 
-## Kartentitel | 10 min | Ich spreche     (oder: TN aktiv)
+## Block 1 · Name des Blocks | 25 min        (Blöcke sind freiwillig)
+Ziel: steht klein auf jeder Karte des Blocks
+
+### Kartentitel | 10 min | Ich spreche       (oder: TN aktiv, Pause)
 > Satz, den ich wörtlich sage
 - Kernpunkt
 1. Schritt der Anleitung
+Rahmen: Satz an die Gruppe, gehört zur Anleitung
 ! Achtung Falle: worauf ich achten muss
 Notiz: nur für mich
+Material: erscheint in der Packliste
 ```
+
+Ohne Blöcke beginnt jede Karte mit `##` statt `###`.
 
 ## Farben
 
