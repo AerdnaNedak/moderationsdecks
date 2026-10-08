@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Moderationsdeck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
+
+<!--
+  ================================================================
+  INHALT DES WORKSHOPS
+  Nur diesen Block ändern. Format:
+
+  # Titel des Workshops
+  Untertitel: Anlass, Kunde, Datum
+
+  ## Kartentitel | 10 min | Ich spreche     (oder: TN aktiv)
+  > Satz, den ich wörtlich sage
+  - Kernpunkt
+  1. Schritt der Anleitung
+  ! Achtung Falle: worauf ich achten muss
+  Material: ...
+  Notiz: ...
+  ================================================================
+-->
+<script type="text/markdown" id="inhalt">
+# KI im Büroalltag
+Untertitel: Teamworkshop · Beispielinhalt zum Ausprobieren
+
+## Ankommen und Erwartungen | 10 min | Ich spreche
+> Schön, dass ihr da seid. Heute geht es darum, was KI euch im Büroalltag konkret abnehmen kann.
+- Ablauf des Tages kurz vorstellen
+- Handys sind erlaubt, wir probieren live aus
+- Erwartungen auf Karten sammeln
+Material: Moderationskarten, Pinnwand
+
+## Zeitfresser-Inventur | 20 min | TN aktiv
+> Schreibt die drei Aufgaben auf, die euch jede Woche am meisten Zeit kosten.
+1. Jede Person notiert drei Zeitfresser, eine Karte pro Aufgabe
+2. Zu zweit vergleichen und Gemeinsamkeiten markieren
+3. Karten an die Pinnwand, nach Häufigkeit clustern
+! Gruppen fangen an, über Lösungen zu sprechen. Erst sammeln, Lösungen kommen später.
+Material: Karten in drei Farben, Stifte
+
+## Was KI kann und was nicht | 15 min | Ich spreche
+> KI ist keine Zauberei, sondern ein sehr schneller Praktikant ohne Kontextwissen.
+- Gut: Texte entwerfen, zusammenfassen, umformulieren
+- Mittel: Recherche, nur mit Quellenprüfung
+- Schlecht: Entscheidungen ohne Kontext, vertrauliche Daten
+! Fragen zum Datenschutz kommen hier fast immer. Kurz beantworten, Details auf den Themenspeicher.
+Notiz: Ein Beispiel aus dem eigenen Büroalltag erzählen
+
+## Live-Demo: Mail zusammenfassen | 10 min | Ich spreche
+> Ich zeige euch einmal, wie das in der Praxis aussieht.
+- Lange Mail-Kette einfügen
+- Zusammenfassung mit Aufgabenliste anfordern
+- Ergebnis gemeinsam prüfen: Was fehlt?
+Material: Laptop, Beamer, Beispiel-Mailkette
+
+## Prompt-Werkstatt | 30 min | TN aktiv
+> Nehmt euch einen Zeitfresser von der Pinnwand und baut dafür euren ersten Prompt.
+1. Dreiergruppen bilden, jede Gruppe wählt eine Karte
+2. Prompt nach dem Schema Rolle, Aufgabe, Format schreiben
+3. Prompt ausprobieren und einmal verbessern
+4. Bestes Ergebnis auf dem Flipchart festhalten
+! Eine Person tippt, die anderen schauen nur zu. Nach jedem Versuch wechseln lassen.
+Material: Laptops oder Handys, Flipchart, Handout mit Schema
+
+## Galerie der Prompts | 15 min | TN aktiv
+> Geht herum und schaut euch die Ergebnisse der anderen Gruppen an.
+1. Jede Gruppe stellt ihren Prompt in einer Minute vor
+2. Alle kleben einen Punkt auf den Prompt, den sie selbst nutzen wollen
+- Voneinander abschauen ist ausdrücklich erwünscht
+
+## Spielregeln für unser Team | 15 min | TN aktiv
+> Was soll bei uns gelten, wenn wir KI nutzen?
+1. Im Plenum Regeln sammeln
+2. Auf höchstens fünf Regeln einigen
+! Die Diskussion rutscht in Grundsatzfragen ab. Zurück zu konkreten Alltagsregeln führen.
+Material: Flipchart
+
+## Abschluss und nächster Schritt | 10 min | Ich spreche
+> Was nehmt ihr euch für die nächste Woche konkret vor?
+- Jede Person nennt einen Prompt, den sie ausprobiert
+- Hinweis auf das Nachtreffen in vier Wochen
+- Danke sagen
+</script>
+<!-- ================= ENDE INHALT ================= -->
+
+<style>
+/* Layout: cream paper on a quiet page, deep fir-green ink; lime = "Ich spreche", violet = "TN aktiv", pink = "Achtung Falle" (work-with-ease.com palette). */
+:root {
+  --bg: #F6F4EC;
+  --surface: #FFFEF9;
+  --ink: #092F26;
+  --ink-2: #52685C;
+  --line: #D6DCD5;
+  --ghost: #E5EBE7;
+  --lime: #C7FF23;
+  --on-lime: #092F26;
+  --violet: #5B2BD6;
+  --on-violet: #FFFFFF;
+  --pink: #FF1693;
+  --on-pink: #FFFFFF;
+  --falle: #E3157E;
+  --falle-bg: color-mix(in srgb, var(--falle) 20%, var(--surface));
+  --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
+  --solid: #092F26;
+  --on-solid: #F6F4EC;
+  --tint-sprechen: color-mix(in srgb, var(--lime) 16%, var(--surface));
+  --tint-aktiv: color-mix(in srgb, var(--violet) 7%, var(--surface));
+  --f: "Space Grotesk", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --fs: 1;
+  --side: 86px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #092F26; --surface: #0F3D32; --ink: #EEF3EE; --ink-2: #A9C2B6; --line: #1D5A4A; --ghost: #1A5244;
+    --violet: #7A4DF0; --solid: #EEF3EE; --on-solid: #092F26; --falle: #FF6DB4;
+    --falle-bg: color-mix(in srgb, var(--falle) 24%, var(--surface));
+    --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
+    --tint-sprechen: color-mix(in srgb, var(--lime) 7%, var(--surface));
+    --tint-aktiv: color-mix(in srgb, var(--violet) 16%, var(--surface));
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #092F26; --surface: #0F3D32; --ink: #EEF3EE; --ink-2: #A9C2B6; --line: #1D5A4A; --ghost: #1A5244;
+  --violet: #7A4DF0; --solid: #EEF3EE; --on-solid: #092F26; --falle: #FF6DB4;
+  --falle-bg: color-mix(in srgb, var(--falle) 24%, var(--surface));
+  --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
+  --tint-sprechen: color-mix(in srgb, var(--lime) 7%, var(--surface));
+  --tint-aktiv: color-mix(in srgb, var(--violet) 16%, var(--surface));
+  color-scheme: dark;
+}
+
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f); font-size: 16px; line-height: 1.45; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2 { text-wrap: balance; }
+.num { font-variant-numeric: tabular-nums; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; }
+.btn.solid { background: var(--solid); color: var(--on-solid); border-color: var(--solid); }
+.btn.small { min-height: 40px; padding: 0 14px; font-size: .92rem; }
+.btn.armed { background: var(--pink); color: var(--on-pink); border-color: var(--pink); }
+
+.badge { display: inline-flex; align-items: center; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; border-radius: 6px; padding: .28em .7em; font-size: .8rem; white-space: nowrap; }
+.badge.sprechen { background: var(--lime); color: var(--on-lime); }
+.badge.aktiv { background: var(--violet); color: var(--on-violet); }
+
+/* ---------- start screen ---------- */
+.home { max-width: 1080px; margin: 0 auto; padding-inline: max(20px, env(safe-area-inset-left, 0px)); padding-block: max(20px, env(safe-area-inset-top, 0px)) 56px; display: grid; gap: 36px; }
+.home-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.01em; }
+.brand-mark { display: flex; gap: 3px; }
+.brand-mark i { width: 8px; height: 18px; border-radius: 2px; display: block; }
+.hero { display: grid; gap: 14px; }
+.eyebrow { font-size: .85rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.hero h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); line-height: 1.02; letter-spacing: -.03em; font-weight: 700; }
+.hero .sub { color: var(--ink-2); font-size: 1.1rem; }
+.flow { display: flex; gap: 3px; height: 16px; max-width: 720px; }
+.flow i { display: block; border-radius: 3px; min-width: 4px; }
+.flow i.sprechen, .brand-mark i.sprechen { background: var(--lime); }
+.flow i.aktiv, .brand-mark i.aktiv { background: var(--violet); }
+.brand-mark i.falle { background: var(--falle); }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: .88rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 6px; }
+.hero-actions .btn { min-height: 56px; padding: 0 28px; font-size: 1.05rem; }
+.agenda h2 { font-size: .85rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+.agenda ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.row { width: 100%; display: grid; grid-template-columns: 2.2rem 8.5rem minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); text-align: left; }
+.row:hover { border-color: var(--ink-2); }
+.row .n { color: var(--ink-2); text-align: right; font-weight: 500; }
+.row .t { font-weight: 700; font-size: 1.05rem; overflow-wrap: anywhere; }
+.row .m { color: var(--ink-2); font-size: .92rem; white-space: nowrap; }
+.row .f { font-size: .75rem; font-weight: 700; color: var(--falle); background: var(--falle-bg); border: 1px solid var(--falle-line); border-radius: 5px; padding: 2px 7px; white-space: nowrap; }
+.row .f.none { visibility: hidden; }
+.empty { border: 2px dashed var(--line); border-radius: 12px; padding: 28px; display: grid; gap: 10px; max-width: 680px; }
+.empty pre { background: var(--surface); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: .85rem; }
+
+/* ---------- present ---------- */
+.pr { position: fixed; inset: 0; z-index: 10; background: var(--bg); display: grid; grid-template-columns: var(--side) minmax(0, 1fr) var(--side); grid-template-rows: auto auto minmax(0, 1fr); column-gap: 12px; padding: max(8px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; overscroll-behavior: none; }
+.pr-top { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; padding-bottom: 8px; min-width: 0; }
+.pr-ttl { flex: 1; min-width: 0; display: grid; line-height: 1.2; padding-inline: 8px; }
+.pr-ttl b { font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pbtn { min-height: 46px; min-width: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; white-space: nowrap; }
+.pbtn.armed { background: var(--pink); color: var(--on-pink); border-color: var(--pink); }
+.pbtn.on { background: var(--solid); color: var(--on-solid); border-color: var(--solid); }
+.side { grid-row: 2 / 4; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0; }
+.side .arr { font-size: 3.2rem; line-height: 1; font-weight: 400; }
+.side .lbl { font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.side.next { background: var(--solid); color: var(--on-solid); border-color: var(--solid); }
+.side:disabled { opacity: .3; cursor: default; }
+.side:active:not(:disabled) { transform: scale(.98); }
+.stage { grid-column: 2; grid-row: 3; position: relative; min-height: 0; display: grid; }
+
+.card { --pad: clamp(18px, 2.4vw, 34px); border-radius: 18px; border: 1px solid var(--line); background: var(--surface); padding: var(--pad); overflow: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: calc(var(--fs) * 15px); min-height: 0; }
+.card.sprechen { background: var(--tint-sprechen); }
+.card.aktiv { background: var(--tint-aktiv); }
+.card.anim { animation: in .22s ease-out; }
+.card.anim.back { animation-name: in-back; }
+@keyframes in { from { transform: translateX(30px); opacity: .35; } to { transform: none; opacity: 1; } }
+@keyframes in-back { from { transform: translateX(-30px); opacity: .35; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .card.anim { animation: none; } }
+.c-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.c-head .badge { font-size: calc(var(--fs) * .95rem); }
+.c-min { font-weight: 700; font-size: calc(var(--fs) * 1.05rem); }
+.c-title { font-size: calc(var(--fs) * clamp(1.5rem, 2.7vw, 2.2rem)); line-height: 1.05; letter-spacing: -.025em; font-weight: 700; }
+.c-say { font-size: calc(var(--fs) * clamp(1.3rem, 2.25vw, 1.7rem)); line-height: 1.35; padding: .55em .85em; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.c-lbl { display: block; font-size: calc(var(--fs) * .85rem); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: .45em; }
+.c-say .c-lbl { font-size: .5em; margin-bottom: .2em; }
+.c-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: calc(var(--fs) * 24px); }
+.c-sec ul, .c-sec ol { margin: 0; padding-left: 1.25em; display: grid; gap: .38em; font-size: calc(var(--fs) * clamp(1.25rem, 2.1vw, 1.6rem)); line-height: 1.3; }
+.c-sec ol li::marker { font-weight: 700; }
+.c-falle { border-radius: 12px; padding: .6em .95em; background: var(--falle-bg); border: 2px solid var(--falle-line); color: var(--ink); font-size: calc(var(--fs) * clamp(1.05rem, 1.7vw, 1.28rem)); line-height: 1.32; }
+.c-falle b { display: block; font-size: .62em; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .2em; color: var(--falle); }
+.c-foot { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-top: auto; padding-top: calc(var(--fs) * 10px); border-top: 1px dashed var(--line); font-size: calc(var(--fs) * 1.2rem); }
+
+/* learn mode */
+.card.neutral { background: var(--surface); }
+.hid { color: transparent !important; background: var(--ghost) !important; background-image: none !important; border-color: transparent !important; border-radius: 8px; }
+.hid * { visibility: hidden; }
+li.hid::marker { color: transparent; }
+.lbl-hid .c-lbl { visibility: hidden; }
+.learnbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; color: var(--ink-2); font-weight: 500; }
+
+.timeline { grid-column: 2; grid-row: 2; display: flex; gap: 3px; height: 6px; margin-bottom: 8px; }
+.timeline i { display: block; border-radius: 3px; min-width: 4px; opacity: .4; }
+.timeline i.sprechen { background: var(--lime); } .timeline i.aktiv { background: var(--violet); }
+.timeline i.done { opacity: .85; }
+.timeline i.now { opacity: 1; outline: 2px solid var(--ink); outline-offset: 1px; }
+.pr-sub { font-size: 1.02rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-sub b { color: var(--ink); }
+.ret { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 2; min-height: 50px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--solid); color: var(--on-solid); font-weight: 700; max-width: calc(100% - 32px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 8px 24px rgba(9, 47, 38, .3); }
+
+/* overview */
+.sheet { position: fixed; inset: 0; z-index: 20; background: color-mix(in srgb, #04150F 60%, transparent); display: grid; place-items: center; padding: 16px; }
+.sheet-box { background: var(--bg); border-radius: 18px; width: min(1100px, 100%); max-height: calc(100% - 24px); overflow: auto; padding: 22px; display: grid; gap: 16px; box-sizing: border-box; }
+.sheet-head { display: flex; align-items: center; gap: 12px; }
+.sheet-head h2 { font-size: 1.5rem; flex: 1; }
+.sheet-head span { color: var(--ink-2); }
+.ov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.ov { text-align: left; border-radius: 12px; border: 2px solid transparent; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-height: 110px; background: var(--surface); }
+.ov.sprechen { background: var(--tint-sprechen); } .ov.aktiv { background: var(--tint-aktiv); }
+.ov.now { border-color: var(--ink); }
+.ov-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: .82rem; color: var(--ink-2); font-weight: 500; }
+.ov .badge { font-size: .68rem; }
+.ov b { font-size: 1.05rem; line-height: 1.2; overflow-wrap: anywhere; }
+.ov .fl { justify-self: start; font-size: .7rem; font-weight: 700; color: var(--falle); background: var(--falle-bg); border: 1px solid var(--falle-line); border-radius: 5px; padding: 2px 7px; }
+
+@media (orientation: portrait), (max-width: 760px) {
+  :root { --side: 64px; }
+  .side .arr { font-size: 2.4rem; }
+  .side .lbl { display: none; }
+  .pbtn.font { display: none; }
+}
+@media (max-width: 600px) {
+  .row { grid-template-columns: 1.6rem minmax(0, 1fr) auto; }
+  .row .badge, .row .f { display: none; }
+  .pr { column-gap: 6px; }
+  :root { --side: 48px; }
+  .pr-top .pbtn { padding: 0 10px; }
+}
+</style>
+
+<div id="home" class="home"></div>
+
+<div id="pr" class="pr" hidden>
+  <div class="pr-top">
+    <button class="pbtn" id="exitBtn" data-act="exit">Beenden</button>
+    <div class="pr-ttl"><b id="prTitle"></b><span class="pr-sub"><span id="prPos" class="num"></span><span id="nextup"></span></span></div>
+    <button class="pbtn" id="learnBtn" data-act="learn">Lernen</button>
+    <button class="pbtn font" data-act="font-" aria-label="Schrift kleiner">A−</button>
+    <button class="pbtn font" data-act="font+" aria-label="Schrift größer">A+</button>
+    <button class="pbtn" data-act="theme" id="themeBtn2" aria-label="Hell oder dunkel">◐</button>
+    <button class="pbtn" data-act="overview">Übersicht</button>
+  </div>
+  <button class="side prev" id="prevBtn" data-act="prev" aria-label="Vorige Karte"><span class="arr">‹</span><span class="lbl">Zurück</span></button>
+  <div class="timeline" id="timeline" aria-hidden="true"></div>
+  <div class="stage" id="stage">
+    <article class="card" id="card"></article>
+    <button class="ret" id="retBtn" data-act="return" hidden></button>
+  </div>
+  <button class="side next" id="nextBtn" data-act="next" aria-label="Nächste Karte"><span class="arr">›</span><span class="lbl">Weiter</span></button>
+</div>
+
+<div class="sheet" id="sheet" hidden><div class="sheet-box" id="sheetBox"></div></div>
+
+<script>
+(function () {
+  'use strict';
+  var ART = {
+    sprechen: { label: 'Ich spreche', say: 'Sagen', steps: 'Ablauf' },
+    aktiv: { label: 'TN aktiv', say: 'Anmoderation', steps: 'Anleitung' }
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fmt(s) { return esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>'); }
+  function lsGet(k, f) { try { var v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function dur(min) { if (!min) return '–'; if (min < 60) return min + ' min'; var h = Math.floor(min / 60), m = min % 60; return h + ' h' + (m ? ' ' + m + ' min' : ''); }
+  function total(cards) { return cards.reduce(function (a, c) { return a + (c.minutes || 0); }, 0); }
+
+  /* ---------- Inhalt lesen ---------- */
+  function artOf(s) {
+    s = String(s || '').toLowerCase();
+    if (/aktiv|\btn\b|übung|uebung|teilnehm/.test(s)) return 'aktiv';
+    if (/sprech|input|impuls|vortrag|\bich\b/.test(s)) return 'sprechen';
+    return null;
+  }
+  function header(h) {
+    var parts = h.split('|').map(function (s) { return s.trim(); });
+    var c = { title: parts[0], minutes: 0, art: null, say: [], points: [], steps: [], fallen: [], material: '', note: [] };
+    parts.slice(1).forEach(function (p) {
+      var m = p.match(/^(\d+)\s*(min\.?|minuten|′|')?$/i);
+      if (m) c.minutes = parseInt(m[1], 10); else { var a = artOf(p); if (a) c.art = a; }
+    });
+    return c;
+  }
+  function addLine(c, l) {
+    var m;
+    if ((m = l.match(/^>\s?(.*)/))) { if (m[1]) c.say.push(m[1]); }
+    else if ((m = l.match(/^!\s*(?:achtung\s*)?(?:falle\s*:?\s*)?(.*)/i))) { if (m[1]) c.fallen.push(m[1]); }
+    else if ((m = l.match(/^(?:achtung\s*)?falle\s*:\s*(.*)/i))) c.fallen.push(m[1]);
+    else if ((m = l.match(/^\d+[.)]\s+(.*)/))) c.steps.push(m[1]);
+    else if ((m = l.match(/^[-*•–]\s+(.*)/))) c.points.push(m[1]);
+    else if ((m = l.match(/^materiale?(?:ien)?\s*:\s*(.*)/i))) c.material = m[1];
+    else if ((m = l.match(/^notiz\s*:\s*(.*)/i))) c.note.push(m[1]);
+    else if ((m = l.match(/^(?:dauer|zeit)\s*:\s*(\d+)/i))) c.minutes = parseInt(m[1], 10);
+    else if ((m = l.match(/^(?:art|typ)\s*:\s*(.*)/i))) { var a = artOf(m[1]); if (a) c.art = a; }
+    else c.points.push(l);
+  }
+  function parse(md) {
+    var deck = { title: '', sub: '', cards: [] }, cur = null;
+    String(md || '').replace(/\r/g, '').split('\n').forEach(function (raw) {
+      var l = raw.trim(), m;
+      if (!l) return;
+      if ((m = l.match(/^#\s+(.*)/))) { deck.title = m[1]; return; }
+      if ((m = l.match(/^##+\s+(.*)/))) { cur = header(m[1]); deck.cards.push(cur); return; }
+      if (!cur) { m = l.match(/^untertitel\s*:\s*(.*)/i); if (m) deck.sub = m[1]; else if (!deck.sub) deck.sub = l; return; }
+      addLine(cur, l);
+    });
+    deck.cards.forEach(function (c) { if (!c.art) c.art = c.steps.length ? 'aktiv' : 'sprechen'; });
+    return deck;
+  }
+
+  var deck = parse(($('inhalt') || {}).textContent);
+  if (deck.title) document.title = deck.title + ' · Moderationsdeck';
+  var pref = lsGet('moderationsdeck.pref', { fs: 1, theme: 'auto' });
+
+  /* ---------- Hell / Dunkel ---------- */
+  function applyTheme() {
+    var r = document.documentElement;
+    if (pref.theme === 'light' || pref.theme === 'dark') r.setAttribute('data-theme', pref.theme); else r.removeAttribute('data-theme');
+    var label = pref.theme === 'dark' ? 'Dunkel' : pref.theme === 'light' ? 'Hell' : 'Automatisch';
+    var b = $('themeBtn'); if (b) b.textContent = 'Ansicht: ' + label;
+    var b2 = $('themeBtn2'); if (b2) b2.setAttribute('aria-label', 'Ansicht: ' + label);
+  }
+  function cycleTheme() {
+    pref.theme = pref.theme === 'auto' ? 'light' : pref.theme === 'light' ? 'dark' : 'auto';
+    lsSet('moderationsdeck.pref', pref); applyTheme();
+  }
+
+  /* ---------- Startseite ---------- */
+  function renderHome() {
+    var cs = deck.cards, akt = cs.filter(function (c) { return c.art === 'aktiv'; }).length;
+    var html = '<header class="home-top"><div class="brand"><span class="brand-mark" aria-hidden="true"><i class="sprechen"></i><i class="aktiv"></i><i class="falle"></i></span>Moderationsdeck</div>' +
+      '<button class="btn small" id="themeBtn" data-act="theme"></button></header>';
+    if (!cs.length) {
+      html += '<section class="empty"><h1 style="font-size:1.6rem">Noch keine Karten</h1>' +
+        '<p>Der Inhalt steht oben in dieser Datei im Block „INHALT DES WORKSHOPS“. Jede Karte beginnt mit zwei Rauten:</p>' +
+        '<pre>## Ankommen | 10 min | Ich spreche\n&gt; Schön, dass ihr da seid.\n- Ablauf vorstellen</pre></section>';
+    } else {
+      html += '<section class="hero">' +
+        '<p class="eyebrow num">' + cs.length + ' Karten · ' + dur(total(cs)) + ' · ' + akt + '× TN aktiv</p>' +
+        '<h1>' + fmt(deck.title || 'Workshop') + '</h1>' +
+        (deck.sub ? '<p class="sub">' + fmt(deck.sub) + '</p>' : '') +
+        '<div class="flow" aria-hidden="true">' + cs.map(function (c) { return '<i class="' + c.art + '" style="flex:' + Math.max(1, c.minutes || 3) + '"></i>'; }).join('') + '</div>' +
+        '<div class="legend"><span><i style="background:var(--lime)"></i>Ich spreche</span><span><i style="background:var(--violet)"></i>TN aktiv</span><span><i style="background:var(--falle)"></i>Achtung Falle</span></div>' +
+        '<div class="hero-actions"><button class="btn solid" data-act="start" data-i="0">Moderieren</button><button class="btn" data-act="start-learn">Lernen</button></div>' +
+        '</section>' +
+        '<section class="agenda"><h2>Ablauf</h2><ol>' + cs.map(function (c, i) {
+          return '<li><button class="row" data-act="start" data-i="' + i + '"><span class="n num">' + (i + 1) + '</span>' +
+            '<span><span class="badge ' + c.art + '">' + ART[c.art].label + '</span></span>' +
+            '<span class="t">' + fmt(c.title) + '</span>' +
+            '<span class="f' + (c.fallen.length ? '' : ' none') + '">⚠ Falle</span>' +
+            '<span class="m num">' + (c.minutes ? c.minutes + ' min' : '') + '</span></button></li>';
+        }).join('') + '</ol></section>';
+    }
+    $('home').innerHTML = html;
+    applyTheme();
+  }
+
+  /* ---------- Moderieren ---------- */
+  var P = null, wake = null;
+  function requestWake() { try { if (navigator.wakeLock && !wake) navigator.wakeLock.request('screen').then(function (w) { wake = w; w.addEventListener('release', function () { wake = null; }); }, function () {}); } catch (e) {} }
+
+  function start(idx, learn) {
+    P = { idx: idx || 0, learn: !!learn, back: null, revealed: 0, items: 0 };
+    document.documentElement.style.setProperty('--fs', pref.fs);
+    $('home').hidden = true; $('pr').hidden = false;
+    requestWake(); render(true);
+  }
+  function exit() {
+    closeSheet(); $('pr').hidden = true; $('home').hidden = false; P = null;
+    try { wake && wake.release(); } catch (e) {} wake = null;
+    window.scrollTo(0, 0);
+  }
+  function go(i, jump) {
+    var n = deck.cards.length;
+    if (!P || i == null || !n) return;
+    i = Math.max(0, Math.min(n - 1, i));
+    if (i === P.idx) return;
+    var dir = i < P.idx ? 'back' : 'fwd';
+    if (jump) P.back = P.idx; else if (i === P.back) P.back = null;
+    P.idx = i; P.revealed = 0;
+    render(true, dir);
+  }
+
+  function list(items, tag) { return '<' + tag + '>' + items.map(function (t) { return '<li class="rv">' + fmt(t) + '</li>'; }).join('') + '</' + tag + '>'; }
+  function render(animate, dir) {
+    var cs = deck.cards, c = cs[P.idx], A = ART[c.art];
+    var before = total(cs.slice(0, P.idx));
+    $('prTitle').innerHTML = fmt(deck.title || 'Workshop');
+    $('prPos').textContent = 'Karte ' + (P.idx + 1) + ' von ' + cs.length + ' · ' + before + ' von ' + total(cs) + ' min' + (P.learn ? ' · Lernmodus' : '');
+    $('learnBtn').textContent = P.learn ? 'Lernmodus an' : 'Lernen';
+    $('learnBtn').classList.toggle('on', P.learn);
+    $('prevBtn').disabled = P.idx <= 0;
+    $('nextBtn').disabled = P.idx >= cs.length - 1;
+
+    var h = '<header class="c-head rv"><span class="badge ' + c.art + '">' + A.label + '</span>' + (c.minutes ? '<span class="c-min num">' + c.minutes + ' min</span>' : '') + '</header>';
+    h += '<h2 class="c-title">' + fmt(c.title) + '</h2>';
+    if (c.say.length) h += '<div class="c-say rv"><span class="c-lbl">' + A.say + '</span>' + c.say.map(fmt).join('<br>') + '</div>';
+    var secs = [];
+    if (c.steps.length) secs.push({ k: 'steps', html: '<section class="c-sec"><span class="c-lbl">' + A.steps + '</span>' + list(c.steps, 'ol') + '</section>' });
+    if (c.points.length) secs.push({ k: 'points', html: '<section class="c-sec"><span class="c-lbl">Kernpunkte</span>' + list(c.points, 'ul') + '</section>' });
+    if (c.art === 'sprechen') secs.reverse();
+    if (secs.length) h += '<div class="c-cols">' + secs.map(function (s) { return s.html; }).join('') + '</div>';
+    c.fallen.forEach(function (f) { h += '<div class="c-falle rv"><b>⚠ Achtung Falle</b>' + fmt(f) + '</div>'; });
+    if (c.note.length) h += '<footer class="c-foot"><div class="rv"><span class="c-lbl">Notiz</span>' + c.note.map(fmt).join('<br>') + '</div></footer>';
+    if (P.learn) h += '<div class="learnbar"><span id="learnHint"></span><button class="btn small" data-act="reveal-all">Alles zeigen</button></div>';
+
+    var card = $('card');
+    card.className = 'card ' + c.art;
+    card.innerHTML = h;
+    card.scrollTop = 0;
+    if (animate) { void card.offsetWidth; card.classList.add('anim'); if (dir === 'back') card.classList.add('back'); }
+    P.items = card.querySelectorAll('.rv').length;
+    applyReveal();
+
+    $('timeline').innerHTML = cs.map(function (x, i) { return '<i class="' + x.art + (i < P.idx ? ' done' : '') + (i === P.idx ? ' now' : '') + '" style="flex:' + Math.max(1, x.minutes || 3) + '"></i>'; }).join('');
+    var nx = cs[P.idx + 1];
+    $('nextup').innerHTML = nx ? ' · Als Nächstes: <b>' + fmt(nx.title) + '</b>' : ' · <b>Letzte Karte</b>';
+    var r = $('retBtn');
+    if (P.back != null && P.back !== P.idx && cs[P.back]) { r.hidden = false; r.textContent = '↩ Zurück zu Karte ' + (P.back + 1) + ': ' + cs[P.back].title.replace(/\*\*/g, ''); }
+    else r.hidden = true;
+  }
+  function applyReveal() {
+    var card = $('card'), on = P.learn;
+    card.querySelectorAll('.rv').forEach(function (el, i) { el.classList.toggle('hid', on && i >= P.revealed); });
+    card.querySelectorAll('.c-sec').forEach(function (s) { var first = s.querySelector('.rv'); s.classList.toggle('lbl-hid', !!(first && first.classList.contains('hid'))); });
+    card.classList.toggle('neutral', on && P.revealed < 1);
+    var hint = $('learnHint');
+    if (hint) hint.textContent = P.revealed >= P.items ? 'Alles aufgedeckt' : 'Auf die Karte tippen zum Aufdecken · ' + P.revealed + ' von ' + P.items;
+  }
+  function revealNext() { if (P && P.learn && P.revealed < P.items) { P.revealed++; applyReveal(); return true; } return false; }
+
+  /* ---------- Übersicht ---------- */
+  function openOverview() {
+    var cs = deck.cards;
+    $('sheetBox').innerHTML = '<div class="sheet-head"><h2>Übersicht</h2><span class="num">' + cs.length + ' Karten · ' + dur(total(cs)) + '</span><button class="pbtn" data-act="close">Schließen</button></div>' +
+      '<div class="ov-grid">' + cs.map(function (c, i) {
+        return '<button class="ov ' + c.art + (i === P.idx ? ' now' : '') + '" data-act="jump" data-i="' + i + '">' +
+          '<span class="ov-top"><span class="num">' + (i + 1) + (i === P.idx ? ' · jetzt' : '') + '</span><span class="num">' + (c.minutes ? c.minutes + ' min' : '') + '</span></span>' +
+          '<span><span class="badge ' + c.art + '">' + ART[c.art].label + '</span></span>' +
+          '<b>' + fmt(c.title) + '</b>' + (c.fallen.length ? '<span class="fl">⚠ Falle</span>' : '') + '</button>';
+      }).join('') + '</div>';
+    $('sheet').hidden = false;
+  }
+  function closeSheet() { $('sheet').hidden = true; $('sheetBox').innerHTML = ''; }
+
+  /* ---------- Bedienung ---------- */
+  var armedAt = 0;
+  function tryExit() {
+    var b = $('exitBtn');
+    if (Date.now() - armedAt < 3000) { armedAt = 0; b.textContent = 'Beenden'; b.classList.remove('armed'); exit(); return; }
+    armedAt = Date.now(); b.textContent = 'Nochmal tippen'; b.classList.add('armed');
+    setTimeout(function () { if (Date.now() - armedAt >= 2900) { b.textContent = 'Beenden'; b.classList.remove('armed'); } }, 3000);
+  }
+  function font(d) { pref.fs = Math.round(Math.max(0.8, Math.min(1.6, pref.fs + d)) * 10) / 10; lsSet('moderationsdeck.pref', pref); document.documentElement.style.setProperty('--fs', pref.fs); }
+
+  var swipedAt = 0;
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) {
+      if (P && P.learn && e.target.closest('#card') && Date.now() - swipedAt > 400) revealNext();
+      return;
+    }
+    if (b.disabled) return;
+    switch (b.dataset.act) {
+      case 'start': start(+b.dataset.i || 0, false); break;
+      case 'start-learn': start(0, true); break;
+      case 'theme': cycleTheme(); break;
+      case 'exit': tryExit(); break;
+      case 'prev': go(P.idx - 1); break;
+      case 'next': go(P.idx + 1); break;
+      case 'return': go(P.back); break;
+      case 'learn': P.learn = !P.learn; P.revealed = 0; render(false); break;
+      case 'reveal-all': P.revealed = P.items; applyReveal(); break;
+      case 'font+': font(0.1); break;
+      case 'font-': font(-0.1); break;
+      case 'overview': openOverview(); break;
+      case 'close': closeSheet(); break;
+      case 'jump': closeSheet(); go(+b.dataset.i, true); break;
+    }
+  });
+  $('sheet').addEventListener('click', function (e) { if (e.target === $('sheet')) closeSheet(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (!P) return;
+    if (!$('sheet').hidden) { if (e.key === 'Escape') closeSheet(); return; }
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown') { e.preventDefault(); go(P.idx + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(P.idx - 1); }
+    else if (k === ' ' || k === 'Enter' || k === 'ArrowDown') { e.preventDefault(); if (!revealNext()) go(P.idx + 1); }
+    else if (k === 'ArrowUp') { e.preventDefault(); go(P.idx - 1); }
+    else if (k === 'o' || k === 'O') openOverview();
+    else if (k === 'l' || k === 'L') { P.learn = !P.learn; P.revealed = 0; render(false); }
+    else if (k === 'Escape') tryExit();
+  });
+
+  var sx = 0, sy = 0, st = 0, stage = $('stage');
+  stage.addEventListener('touchstart', function (e) { var t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); }, { passive: true });
+  stage.addEventListener('touchend', function (e) {
+    if (!P) return;
+    var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6 && Date.now() - st < 800) { swipedAt = Date.now(); go(P.idx + (dx < 0 ? 1 : -1)); }
+  }, { passive: true });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && P) requestWake(); });
+
+  renderHome();
+})();
+</script>
+</body>
+</html>

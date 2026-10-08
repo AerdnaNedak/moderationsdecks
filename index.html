@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Moderationsdeck</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Moderation">
+<meta name="theme-color" content="#F6F4EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#092F26" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
+<style>
+/* Layout: cream paper on a quiet page, deep fir-green ink; lime = "Ich spreche", violet = "TN aktiv", pink = "Achtung Falle" (work-with-ease.com palette). */
+:root {
+  --bg: #F6F4EC;
+  --surface: #FFFEF9;
+  --ink: #092F26;
+  --ink-2: #52685C;
+  --line: #D6DCD5;
+  --ghost: #E5EBE7;
+  --lime: #C7FF23;
+  --on-lime: #092F26;
+  --violet: #5B2BD6;
+  --on-violet: #FFFFFF;
+  --pink: #FF1693;
+  --on-pink: #FFFFFF;
+  --falle: #E3157E;
+  --falle-bg: color-mix(in srgb, var(--falle) 20%, var(--surface));
+  --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
+  --solid: #092F26;
+  --on-solid: #F6F4EC;
+  --tint-sprechen: color-mix(in srgb, var(--lime) 16%, var(--surface));
+  --tint-aktiv: color-mix(in srgb, var(--violet) 7%, var(--surface));
+  --f: "Space Grotesk", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --fs: 1;
+  --side: 86px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #092F26; --surface: #0F3D32; --ink: #EEF3EE; --ink-2: #A9C2B6; --line: #1D5A4A; --ghost: #1A5244;
+    --violet: #7A4DF0; --solid: #EEF3EE; --on-solid: #092F26; --falle: #FF6DB4;
+    --falle-bg: color-mix(in srgb, var(--falle) 24%, var(--surface));
+    --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
+    --tint-sprechen: color-mix(in srgb, var(--lime) 7%, var(--surface));
+    --tint-aktiv: color-mix(in srgb, var(--violet) 16%, var(--surface));
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #092F26; --surface: #0F3D32; --ink: #EEF3EE; --ink-2: #A9C2B6; --line: #1D5A4A; --ghost: #1A5244;
+  --violet: #7A4DF0; --solid: #EEF3EE; --on-solid: #092F26; --falle: #FF6DB4;
+  --falle-bg: color-mix(in srgb, var(--falle) 24%, var(--surface));
+  --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
+  --tint-sprechen: color-mix(in srgb, var(--lime) 7%, var(--surface));
+  --tint-aktiv: color-mix(in srgb, var(--violet) 16%, var(--surface));
+  color-scheme: dark;
+}
+
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f); font-size: 16px; line-height: 1.45; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2 { text-wrap: balance; }
+.num { font-variant-numeric: tabular-nums; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; }
+.btn.solid { background: var(--solid); color: var(--on-solid); border-color: var(--solid); }
+.btn.small { min-height: 40px; padding: 0 14px; font-size: .92rem; }
+.btn.armed { background: var(--pink); color: var(--on-pink); border-color: var(--pink); }
+
+.badge { display: inline-flex; align-items: center; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; border-radius: 6px; padding: .28em .7em; font-size: .8rem; white-space: nowrap; }
+.badge.sprechen { background: var(--lime); color: var(--on-lime); }
+.badge.aktiv { background: var(--violet); color: var(--on-violet); }
+
+/* ---------- start screen ---------- */
+.home { max-width: 1080px; margin: 0 auto; padding-inline: max(20px, env(safe-area-inset-left, 0px)); padding-block: max(20px, env(safe-area-inset-top, 0px)) 56px; display: grid; gap: 36px; }
+.home-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.01em; }
+.brand-mark { display: flex; gap: 3px; }
+.brand-mark i { width: 8px; height: 18px; border-radius: 2px; display: block; }
+.hero { display: grid; gap: 14px; }
+.eyebrow { font-size: .85rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.hero h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); line-height: 1.02; letter-spacing: -.03em; font-weight: 700; }
+.hero .sub { color: var(--ink-2); font-size: 1.1rem; }
+.flow { display: flex; gap: 3px; height: 16px; max-width: 720px; }
+.flow i { display: block; border-radius: 3px; min-width: 4px; }
+.flow i.sprechen, .brand-mark i.sprechen { background: var(--lime); }
+.flow i.aktiv, .brand-mark i.aktiv { background: var(--violet); }
+.brand-mark i.falle { background: var(--falle); }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: .88rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 6px; }
+.hero-actions .btn { min-height: 56px; padding: 0 28px; font-size: 1.05rem; }
+.agenda h2 { font-size: .85rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+.agenda ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.row { width: 100%; display: grid; grid-template-columns: 2.2rem 8.5rem minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); text-align: left; }
+.row:hover { border-color: var(--ink-2); }
+.row .n { color: var(--ink-2); text-align: right; font-weight: 500; }
+.row .t { font-weight: 700; font-size: 1.05rem; overflow-wrap: anywhere; }
+.row .m { color: var(--ink-2); font-size: .92rem; white-space: nowrap; }
+.row .f { font-size: .75rem; font-weight: 700; color: var(--falle); background: var(--falle-bg); border: 1px solid var(--falle-line); border-radius: 5px; padding: 2px 7px; white-space: nowrap; }
+.row .f.none { visibility: hidden; }
+.empty { border: 2px dashed var(--line); border-radius: 12px; padding: 28px; display: grid; gap: 10px; max-width: 680px; }
+.empty pre { background: var(--surface); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: .85rem; }
+
+/* ---------- present ---------- */
+.pr { position: fixed; inset: 0; z-index: 10; background: var(--bg); display: grid; grid-template-columns: var(--side) minmax(0, 1fr) var(--side); grid-template-rows: auto auto minmax(0, 1fr); column-gap: 12px; padding: max(8px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; overscroll-behavior: none; }
+.pr-top { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; padding-bottom: 8px; min-width: 0; }
+.pr-ttl { flex: 1; min-width: 0; display: grid; line-height: 1.2; padding-inline: 8px; }
+.pr-ttl b { font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pbtn { min-height: 46px; min-width: 46px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; white-space: nowrap; }
+.pbtn.armed { background: var(--pink); color: var(--on-pink); border-color: var(--pink); }
+.pbtn.on { background: var(--solid); color: var(--on-solid); border-color: var(--solid); }
+.side { grid-row: 2 / 4; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0; }
+.side .arr { font-size: 3.2rem; line-height: 1; font-weight: 400; }
+.side .lbl { font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.side.next { background: var(--solid); color: var(--on-solid); border-color: var(--solid); }
+.side:disabled { opacity: .3; cursor: default; }
+.side:active:not(:disabled) { transform: scale(.98); }
+.stage { grid-column: 2; grid-row: 3; position: relative; min-height: 0; display: grid; }
+
+.card { --pad: clamp(18px, 2.4vw, 34px); border-radius: 18px; border: 1px solid var(--line); background: var(--surface); padding: var(--pad); overflow: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: calc(var(--fs) * 15px); min-height: 0; }
+.card.sprechen { background: var(--tint-sprechen); }
+.card.aktiv { background: var(--tint-aktiv); }
+.card.anim { animation: in .22s ease-out; }
+.card.anim.back { animation-name: in-back; }
+@keyframes in { from { transform: translateX(30px); opacity: .35; } to { transform: none; opacity: 1; } }
+@keyframes in-back { from { transform: translateX(-30px); opacity: .35; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .card.anim { animation: none; } }
+.c-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.c-head .badge { font-size: calc(var(--fs) * .95rem); }
+.c-min { font-weight: 700; font-size: calc(var(--fs) * 1.05rem); }
+.c-title { font-size: calc(var(--fs) * clamp(1.5rem, 2.7vw, 2.2rem)); line-height: 1.05; letter-spacing: -.025em; font-weight: 700; }
+.c-say { font-size: calc(var(--fs) * clamp(1.3rem, 2.25vw, 1.7rem)); line-height: 1.35; padding: .55em .85em; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.c-lbl { display: block; font-size: calc(var(--fs) * .85rem); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: .45em; }
+.c-say .c-lbl { font-size: .5em; margin-bottom: .2em; }
+.c-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: calc(var(--fs) * 24px); }
+.c-sec ul, .c-sec ol { margin: 0; padding-left: 1.25em; display: grid; gap: .38em; font-size: calc(var(--fs) * clamp(1.25rem, 2.1vw, 1.6rem)); line-height: 1.3; }
+.c-sec ol li::marker { font-weight: 700; }
+.c-falle { border-radius: 12px; padding: .6em .95em; background: var(--falle-bg); border: 2px solid var(--falle-line); color: var(--ink); font-size: calc(var(--fs) * clamp(1.05rem, 1.7vw, 1.28rem)); line-height: 1.32; }
+.c-falle b { display: block; font-size: .62em; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .2em; color: var(--falle); }
+.c-foot { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-top: auto; padding-top: calc(var(--fs) * 10px); border-top: 1px dashed var(--line); font-size: calc(var(--fs) * 1.2rem); }
+
+/* learn mode */
+.card.neutral { background: var(--surface); }
+.hid { color: transparent !important; background: var(--ghost) !important; background-image: none !important; border-color: transparent !important; border-radius: 8px; }
+.hid * { visibility: hidden; }
+li.hid::marker { color: transparent; }
+.lbl-hid .c-lbl { visibility: hidden; }
+.learnbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; color: var(--ink-2); font-weight: 500; }
+
+.timeline { grid-column: 2; grid-row: 2; display: flex; gap: 3px; height: 6px; margin-bottom: 8px; }
+.timeline i { display: block; border-radius: 3px; min-width: 4px; opacity: .4; }
+.timeline i.sprechen { background: var(--lime); } .timeline i.aktiv { background: var(--violet); }
+.timeline i.done { opacity: .85; }
+.timeline i.now { opacity: 1; outline: 2px solid var(--ink); outline-offset: 1px; }
+.pr-sub { font-size: 1.02rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-sub b { color: var(--ink); }
+.ret { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 2; min-height: 50px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--solid); color: var(--on-solid); font-weight: 700; max-width: calc(100% - 32px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 8px 24px rgba(9, 47, 38, .3); }
+
+/* overview */
+.sheet { position: fixed; inset: 0; z-index: 20; background: color-mix(in srgb, #04150F 60%, transparent); display: grid; place-items: center; padding: 16px; }
+.sheet-box { background: var(--bg); border-radius: 18px; width: min(1100px, 100%); max-height: calc(100% - 24px); overflow: auto; padding: 22px; display: grid; gap: 16px; box-sizing: border-box; }
+.sheet-head { display: flex; align-items: center; gap: 12px; }
+.sheet-head h2 { font-size: 1.5rem; flex: 1; }
+.sheet-head span { color: var(--ink-2); }
+.ov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.ov { text-align: left; border-radius: 12px; border: 2px solid transparent; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-height: 110px; background: var(--surface); }
+.ov.sprechen { background: var(--tint-sprechen); } .ov.aktiv { background: var(--tint-aktiv); }
+.ov.now { border-color: var(--ink); }
+.ov-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: .82rem; color: var(--ink-2); font-weight: 500; }
+.ov .badge { font-size: .68rem; }
+.ov b { font-size: 1.05rem; line-height: 1.2; overflow-wrap: anywhere; }
+.ov .fl { justify-self: start; font-size: .7rem; font-weight: 700; color: var(--falle); background: var(--falle-bg); border: 1px solid var(--falle-line); border-radius: 5px; padding: 2px 7px; }
+
+@media (orientation: portrait), (max-width: 760px) {
+  :root { --side: 64px; }
+  .side .arr { font-size: 2.4rem; }
+  .side .lbl { display: none; }
+  .pbtn.font { display: none; }
+}
+@media (max-width: 600px) {
+  .row { grid-template-columns: 1.6rem minmax(0, 1fr) auto; }
+  .row .badge, .row .f { display: none; }
+  .pr { column-gap: 6px; }
+  :root { --side: 48px; }
+  .pr-top .pbtn { padding: 0 10px; }
+}
+
+/* ---------- library, workshop view, sheets ---------- */
+.lib-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 14px; }
+.lib-head h1 { font-size: clamp(2rem, 4.6vw, 3rem); line-height: 1.05; letter-spacing: -.03em; }
+.top-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sync { font-size: .88rem; color: var(--ink-2); }
+.sync.err { color: var(--falle); font-weight: 700; }
+.ws-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.ws { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.ws:hover { border-color: var(--ink-2); }
+.ws h2 { font-size: 1.35rem; line-height: 1.15; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.ws .sub { color: var(--ink-2); font-size: .95rem; }
+.ws .meta { color: var(--ink-2); font-size: .9rem; }
+.ws .flow { height: 10px; }
+.ws.add { border-style: dashed; place-content: center; justify-items: center; min-height: 150px; color: var(--ink-2); font-weight: 700; font-size: 1.05rem; }
+.tag { justify-self: start; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); border: 1px dashed var(--ink-2); border-radius: 5px; padding: 1px 8px; }
+.banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.banner p { color: var(--ink-2); }
+.connect { display: grid; gap: 14px; max-width: 640px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
+.connect h2 { font-size: 1.5rem; }
+.connect p { color: var(--ink-2); }
+.ws-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.agenda li { display: flex; gap: 6px; align-items: stretch; }
+.agenda li .row { flex: 1; min-width: 0; }
+.edit-btn { flex: none; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px; font-weight: 700; font-size: .88rem; color: var(--ink-2); }
+.edit-btn:hover { color: var(--ink); border-color: var(--ink-2); }
+.ws-tools { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
+.sheet-box.form { width: min(860px, 100%); }
+.field { display: grid; gap: 6px; }
+.field > span { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.field small { color: var(--ink-2); }
+input[type=text], textarea { font: inherit; color: var(--ink); width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 12px 14px; min-height: 48px; }
+input[type=text]:focus, textarea:focus { outline: none; border-color: var(--violet); }
+textarea#edText { min-height: 46vh; font-size: 1.08rem; line-height: 1.5; resize: vertical; }
+details.help { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+details.help summary { cursor: pointer; font-weight: 700; }
+details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; margin: 10px 0 0; color: var(--ink-2); }
+.sheet-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+.sheet-foot .hint { margin-right: auto; color: var(--ink-2); font-size: .9rem; }
+.err-msg { color: var(--falle); font-weight: 700; }
+.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 12px; }
+.steps a.btn { text-decoration: none; color: var(--on-solid); }
+.set-sec { display: grid; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.set-sec:last-child { border-bottom: 0; padding-bottom: 0; }
+.set-sec h3 { font-size: 1.1rem; }
+.set-sec p { color: var(--ink-2); }
+.row-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; background: var(--solid); color: var(--on-solid); padding: 12px 20px; border-radius: 10px; font-weight: 700; max-width: calc(100% - 32px); }
+</style>
+</head>
+<body>
+
+<div id="view" class="home"></div>
+
+<div id="pr" class="pr" hidden>
+  <div class="pr-top">
+    <button class="pbtn" id="exitBtn" data-act="exit">Beenden</button>
+    <div class="pr-ttl"><b id="prTitle"></b><span class="pr-sub"><span id="prPos" class="num"></span><span id="nextup"></span></span></div>
+    <button class="pbtn" id="learnBtn" data-act="learn">Lernen</button>
+    <button class="pbtn font" data-act="font-" aria-label="Schrift kleiner">A−</button>
+    <button class="pbtn font" data-act="font+" aria-label="Schrift größer">A+</button>
+    <button class="pbtn" data-act="theme" aria-label="Hell oder dunkel">◐</button>
+    <button class="pbtn" data-act="overview">Übersicht</button>
+  </div>
+  <button class="side prev" id="prevBtn" data-act="prev" aria-label="Vorige Karte"><span class="arr">‹</span><span class="lbl">Zurück</span></button>
+  <div class="timeline" id="timeline" aria-hidden="true"></div>
+  <div class="stage" id="stage">
+    <article class="card" id="card"></article>
+    <button class="ret" id="retBtn" data-act="return" hidden></button>
+  </div>
+  <button class="side next" id="nextBtn" data-act="next" aria-label="Nächste Karte"><span class="arr">›</span><span class="lbl">Weiter</span></button>
+</div>
+
+<div class="sheet" id="sheet" hidden><div class="sheet-box" id="sheetBox"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
+  var APP_KEY = '';
+  var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
+  var VERSION = '1.0';
+
+  var SAMPLE = [
+    '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
+    '## Ankommen und Erwartungen | 10 min | Ich spreche', '> Schön, dass ihr da seid. Heute geht es darum, was KI euch im Büroalltag konkret abnehmen kann.',
+    '- Ablauf des Tages kurz vorstellen', '- Handys sind erlaubt, wir probieren live aus', '- Erwartungen auf Karten sammeln', '',
+    '## Zeitfresser-Inventur | 20 min | TN aktiv', '> Schreibt die drei Aufgaben auf, die euch jede Woche am meisten Zeit kosten.',
+    '1. Jede Person notiert drei Zeitfresser, eine Karte pro Aufgabe', '2. Zu zweit vergleichen und Gemeinsamkeiten markieren', '3. Karten an die Pinnwand, nach Häufigkeit clustern',
+    '! Gruppen fangen an, über Lösungen zu sprechen. Erst sammeln, Lösungen kommen später.', '',
+    '## Was KI kann und was nicht | 15 min | Ich spreche', '> KI ist keine Zauberei, sondern ein sehr schneller Praktikant ohne Kontextwissen.',
+    '- Gut: Texte entwerfen, zusammenfassen, umformulieren', '- Mittel: Recherche, nur mit Quellenprüfung', '- Schlecht: Entscheidungen ohne Kontext, vertrauliche Daten',
+    '! Fragen zum Datenschutz kommen hier fast immer. Kurz beantworten, Details auf den Themenspeicher.', 'Notiz: Ein Beispiel aus dem eigenen Büroalltag erzählen', '',
+    '## Prompt-Werkstatt | 30 min | TN aktiv', '> Nehmt euch einen Zeitfresser von der Pinnwand und baut dafür euren ersten Prompt.',
+    '1. Dreiergruppen bilden, jede Gruppe wählt eine Karte', '2. Prompt nach dem Schema Rolle, Aufgabe, Format schreiben', '3. Prompt ausprobieren und einmal verbessern',
+    '! Eine Person tippt, die anderen schauen nur zu. Nach jedem Versuch wechseln lassen.', '',
+    '## Abschluss und nächster Schritt | 10 min | Ich spreche', '> Was nehmt ihr euch für die nächste Woche konkret vor?',
+    '- Jede Person nennt einen Prompt, den sie ausprobiert', '- Danke sagen', ''
+  ].join('\n');
+
+  var FORMAT_HELP = '# Titel des Workshops\nUntertitel: Anlass, Kunde, Datum\n\n## Kartentitel | 10 min | Ich spreche   (oder: TN aktiv)\n> Satz, den ich wörtlich sage\n- Kernpunkt\n1. Schritt der Anleitung\n! Achtung Falle: worauf ich achten muss\nNotiz: nur für mich';
+
+  var ART = {
+    sprechen: { label: 'Ich spreche', say: 'Sagen', steps: 'Ablauf' },
+    aktiv: { label: 'TN aktiv', say: 'Anmoderation', steps: 'Anleitung' }
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fmt(s) { return esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>'); }
+  function lsGet(k, f) { try { var v = localStorage.getItem(k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } }
+  function lsSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function dur(min) { if (!min) return '–'; if (min < 60) return min + ' min'; var h = Math.floor(min / 60), m = min % 60; return h + ' h' + (m ? ' ' + m + ' min' : ''); }
+  function total(cards) { return cards.reduce(function (a, c) { return a + (c.minutes || 0); }, 0); }
+  function when(ts) {
+    if (!ts) return 'noch nie';
+    var d = new Date(ts), n = new Date(), hm = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    return d.toDateString() === n.toDateString() ? 'heute, ' + hm : d.getDate() + '.' + (d.getMonth() + 1) + '., ' + hm;
+  }
+
+  /* ---------- Inhalt lesen ---------- */
+  function artOf(s) {
+    s = String(s || '').toLowerCase();
+    if (/aktiv|\btn\b|übung|uebung|teilnehm/.test(s)) return 'aktiv';
+    if (/sprech|input|impuls|vortrag|\bich\b/.test(s)) return 'sprechen';
+    return null;
+  }
+  function header(h) {
+    var parts = h.split('|').map(function (s) { return s.trim(); });
+    var c = { title: parts[0], minutes: 0, art: null, say: [], points: [], steps: [], fallen: [], material: '', note: [] };
+    parts.slice(1).forEach(function (p) {
+      var m = p.match(/^(\d+)\s*(min\.?|minuten|′|')?$/i);
+      if (m) c.minutes = parseInt(m[1], 10); else { var a = artOf(p); if (a) c.art = a; }
+    });
+    return c;
+  }
+  function addLine(c, l) {
+    var m;
+    if ((m = l.match(/^>\s?(.*)/))) { if (m[1]) c.say.push(m[1]); }
+    else if ((m = l.match(/^!\s*(?:achtung\s*)?(?:falle\s*:?\s*)?(.*)/i))) { if (m[1]) c.fallen.push(m[1]); }
+    else if ((m = l.match(/^(?:achtung\s*)?falle\s*:\s*(.*)/i))) c.fallen.push(m[1]);
+    else if ((m = l.match(/^\d+[.)]\s+(.*)/))) c.steps.push(m[1]);
+    else if ((m = l.match(/^[-*•–]\s+(.*)/))) { if (m[1]) c.points.push(m[1]); }
+    else if ((m = l.match(/^materiale?(?:ien)?\s*:\s*(.*)/i))) c.material = m[1];
+    else if ((m = l.match(/^notiz\s*:\s*(.*)/i))) { if (m[1]) c.note.push(m[1]); }
+    else if ((m = l.match(/^(?:dauer|zeit)\s*:\s*(\d+)/i))) c.minutes = parseInt(m[1], 10);
+    else if ((m = l.match(/^(?:art|typ)\s*:\s*(.*)/i))) { var a = artOf(m[1]); if (a) c.art = a; }
+    else if (!/^-$|^>$/.test(l)) c.points.push(l);
+  }
+  function parse(md) {
+    var deck = { title: '', sub: '', cards: [] }, cur = null;
+    String(md || '').replace(/\r/g, '').split('\n').forEach(function (raw) {
+      var l = raw.trim(), m;
+      if (!l) return;
+      if ((m = l.match(/^#\s+(.*)/))) { deck.title = m[1]; return; }
+      if ((m = l.match(/^##+\s+(.*)/))) { cur = header(m[1]); deck.cards.push(cur); return; }
+      if (!cur) { m = l.match(/^untertitel\s*:\s*(.*)/i); if (m) deck.sub = m[1]; else if (!deck.sub) deck.sub = l; return; }
+      addLine(cur, l);
+    });
+    deck.cards.forEach(function (c) { if (!c.art) c.art = c.steps.length ? 'aktiv' : 'sprechen'; });
+    return deck;
+  }
+  /* Abschnitte einer Datei: eine Karte = von "## ..." bis vor die nächste "## ..." */
+  function sectionBounds(text) {
+    var lines = text.replace(/\r/g, '').split('\n'), idx = [];
+    lines.forEach(function (l, i) { if (/^##+\s/.test(l.trim())) idx.push(i); });
+    return { lines: lines, idx: idx };
+  }
+  function getSection(text, i) {
+    var b = sectionBounds(text), s = b.idx[i], e = i + 1 < b.idx.length ? b.idx[i + 1] : b.lines.length;
+    return b.lines.slice(s, e).join('\n').replace(/\s+$/, '');
+  }
+  function replaceSection(text, i, val) {
+    var b = sectionBounds(text), s = b.idx[i], e = i + 1 < b.idx.length ? b.idx[i + 1] : b.lines.length;
+    var mid = val.replace(/\s+$/, '');
+    var out = b.lines.slice(0, s).concat(mid ? mid.split('\n').concat(['']) : [], b.lines.slice(e));
+    return out.join('\n').replace(/\n{3,}/g, '\n\n').replace(/\s*$/, '\n');
+  }
+  function appendSection(text, val) { return text.replace(/\s*$/, '') + '\n\n' + val.replace(/\s+$/, '') + '\n'; }
+
+  /* ---------- Zustand ---------- */
+  var pref = Object.assign({ fs: 1, theme: 'auto', folder: DEFAULT_FOLDER, appKey: '' }, lsGet('md.pref', {}));
+  var auth = lsGet('md.auth', null);
+  var store = Object.assign({ files: {}, lastSync: 0 }, lsGet('md.store', {}));
+  var S = { view: 'lib', cur: null, demo: false, syncing: false, syncErr: '', edit: null, connectUrl: '' };
+  var parsed = {};
+  function savePref() { lsSet('md.pref', pref); }
+  function saveStore() { lsSet('md.store', store); }
+  function saveAuth() { lsSet('md.auth', auth); }
+  function appKey() { return APP_KEY || pref.appKey || ''; }
+  function connected() { return !!(auth && auth.refresh && appKey()); }
+
+  function files() {
+    if (S.demo) return [{ key: 'demo', path: 'Beispiel', name: 'beispiel.md', rev: 'demo', text: SAMPLE, demo: true }];
+    return Object.keys(store.files).map(function (k) { var f = store.files[k]; return { key: k, path: f.path, name: f.name, rev: f.rev, text: f.text, modified: f.modified }; });
+  }
+  function fileByKey(k) { return files().filter(function (f) { return f.key === k; })[0] || null; }
+  function deckOf(f) { var id = f.key + '@' + f.rev; if (!parsed[id]) parsed[id] = parse(f.text); return parsed[id]; }
+
+  /* ---------- Dropbox ---------- */
+  function hj(o) { return JSON.stringify(o).replace(/[\u007f-￿]/g, function (c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); }); }
+  function b64url(buf) { var s = '', b = new Uint8Array(buf); for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  async function prepareConnect() {
+    var v = b64url(crypto.getRandomValues(new Uint8Array(48)));
+    lsSet('md.pkce', v);
+    var ch = b64url(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v)));
+    return 'https://www.dropbox.com/oauth2/authorize?client_id=' + encodeURIComponent(appKey()) + '&response_type=code&code_challenge=' + ch + '&code_challenge_method=S256&token_access_type=offline';
+  }
+  var TOKEN_URL = 'https://api.dropboxapi.com/oauth2/token';
+  async function exchange(code) {
+    var v = lsGet('md.pkce', null);
+    if (!v) throw { msg: 'Tippe zuerst auf „Bei Dropbox anmelden“.' };
+    var r = await fetch(TOKEN_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ code: code.trim(), grant_type: 'authorization_code', code_verifier: v, client_id: appKey() }) });
+    var j = await r.json().catch(function () { return {}; });
+    if (!r.ok) throw { msg: 'Der Code wurde nicht angenommen. Hole dir einen neuen Code und füge ihn gleich ein.' };
+    auth = { access: j.access_token, refresh: j.refresh_token, exp: Date.now() + (j.expires_in || 14400) * 1000 };
+    saveAuth(); lsSet('md.pkce', null);
+  }
+  async function token() {
+    if (!auth) throw { code: 'auth' };
+    if (auth.access && Date.now() < auth.exp - 60000) return auth.access;
+    var r = await fetch(TOKEN_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: auth.refresh, client_id: appKey() }) });
+    var j = await r.json().catch(function () { return {}; });
+    if (!r.ok) { if (j.error === 'invalid_grant') { auth = null; saveAuth(); } throw { code: 'auth' }; }
+    auth.access = j.access_token; auth.exp = Date.now() + (j.expires_in || 14400) * 1000; saveAuth();
+    return auth.access;
+  }
+  async function rpc(endpoint, body) {
+    var t = await token();
+    var r = await fetch('https://api.dropboxapi.com/2/' + endpoint, { method: 'POST', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    var txt = await r.text(), j;
+    try { j = JSON.parse(txt); } catch (e) { j = { error_summary: txt }; }
+    if (!r.ok) throw { code: r.status, summary: j.error_summary || '' };
+    return j;
+  }
+  async function download(path) {
+    var t = await token();
+    var r = await fetch('https://content.dropboxapi.com/2/files/download', { method: 'POST', headers: { Authorization: 'Bearer ' + t, 'Dropbox-API-Arg': hj({ path: path }) } });
+    if (!r.ok) throw { code: r.status, summary: await r.text() };
+    return r.text();
+  }
+  async function upload(path, text, rev) {
+    var t = await token();
+    var mode = rev ? { '.tag': 'update', update: rev } : { '.tag': 'add' };
+    var r = await fetch('https://content.dropboxapi.com/2/files/upload', { method: 'POST', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/octet-stream', 'Dropbox-API-Arg': hj({ path: path, mode: mode, autorename: false, mute: true, strict_conflict: true }) }, body: new Blob([text], { type: 'application/octet-stream' }) });
+    var txt = await r.text();
+    if (!r.ok) throw { code: r.status, summary: txt };
+    return JSON.parse(txt);
+  }
+  async function listAll() {
+    var j = await rpc('files/list_folder', { path: pref.folder, recursive: false }), all = j.entries;
+    while (j.has_more) { j = await rpc('files/list_folder/continue', { cursor: j.cursor }); all = all.concat(j.entries); }
+    return all.filter(function (e) { return e['.tag'] === 'file' && /\.md$/i.test(e.name); });
+  }
+  function errText(err) {
+    if (!err) return 'Unbekannter Fehler.';
+    if (err.msg) return err.msg;
+    if (err.code === 'auth') return 'Die Verbindung zu Dropbox ist abgelaufen. Verbinde dich in den Einstellungen neu.';
+    if (err.code === 409 && /not_found/.test(err.summary || '')) return 'Der Ordner wurde in deiner Dropbox nicht gefunden: ' + pref.folder;
+    if (err.code === 409 && /conflict/.test(err.summary || '')) return 'Die Datei wurde inzwischen an anderer Stelle geändert. Tippe auf „Aktualisieren“ und ändere sie dann noch einmal.';
+    if (err instanceof TypeError) return 'Keine Verbindung zu Dropbox. Prüfe das Internet.';
+    return 'Dropbox meldet einen Fehler (' + (err.code || '?') + ').';
+  }
+
+  async function sync(manual) {
+    if (S.syncing || !connected()) return;
+    if (!navigator.onLine) { renderStatus(); if (manual) toast('Kein Internet. Du siehst den zuletzt gespeicherten Stand.'); return; }
+    S.syncing = true; S.syncErr = ''; renderStatus();
+    try {
+      var entries = await listAll(), next = {};
+      for (var i = 0; i < entries.length; i++) {
+        var e = entries[i], k = e.path_lower, old = store.files[k];
+        if (old && old.rev === e.rev) next[k] = old;
+        else next[k] = { path: e.path_display, name: e.name, rev: e.rev, modified: e.server_modified, text: await download(e.path_lower) };
+      }
+      store.files = next; store.lastSync = Date.now(); saveStore();
+      if (manual) toast('Auf dem neuesten Stand');
+    } catch (err) { S.syncErr = errText(err); }
+    S.syncing = false;
+    afterData();
+  }
+  function afterData() {
+    if (S.view === 'lib') renderLib();
+    else if (S.view === 'ws') { if (fileByKey(S.cur)) renderWs(); else { S.view = 'lib'; renderLib(); } }
+    else if (S.view === 'present' && P) { var f = fileByKey(S.cur); if (f) { deck = deckOf(f); if (deck.cards.length) { P.idx = Math.min(P.idx, deck.cards.length - 1); render(false); } } }
+  }
+
+  /* ---------- Hell / Dunkel ---------- */
+  function applyTheme() {
+    var r = document.documentElement;
+    if (pref.theme === 'light' || pref.theme === 'dark') r.setAttribute('data-theme', pref.theme); else r.removeAttribute('data-theme');
+  }
+  function themeLabel() { return pref.theme === 'dark' ? 'Dunkel' : pref.theme === 'light' ? 'Hell' : 'Automatisch'; }
+  function cycleTheme() {
+    pref.theme = pref.theme === 'auto' ? 'light' : pref.theme === 'light' ? 'dark' : 'auto';
+    savePref(); applyTheme();
+    document.querySelectorAll('[data-theme-label]').forEach(function (el) { el.textContent = 'Ansicht: ' + themeLabel(); });
+  }
+
+  /* ---------- Übersicht aller Workshops ---------- */
+  function statusText() {
+    if (S.demo) return 'Beispielansicht';
+    if (!connected()) return 'Nicht mit Dropbox verbunden';
+    if (S.syncing) return 'Aktualisiere …';
+    if (S.syncErr) return S.syncErr;
+    if (!navigator.onLine) return 'Offline · Stand: ' + when(store.lastSync);
+    return 'Stand: ' + when(store.lastSync);
+  }
+  function renderStatus() {
+    document.querySelectorAll('.sync').forEach(function (el) { el.textContent = statusText(); el.classList.toggle('err', !!S.syncErr && !S.syncing); });
+  }
+  function brand() {
+    return '<div class="brand"><span class="brand-mark" aria-hidden="true"><i class="sprechen"></i><i class="aktiv"></i><i class="falle"></i></span>Moderationsdeck</div>';
+  }
+  function flow(cs) { return '<div class="flow" aria-hidden="true">' + cs.map(function (c) { return '<i class="' + c.art + '" style="flex:' + Math.max(1, c.minutes || 3) + '"></i>'; }).join('') + '</div>'; }
+
+  function renderLib() {
+    S.view = 'lib'; applyTheme();
+    var fs = files().map(function (f) { return { f: f, d: deckOf(f) }; })
+      .sort(function (a, b) { return (a.d.title || a.f.name).localeCompare(b.d.title || b.f.name, 'de'); });
+    var canEdit = connected() && !S.demo;
+    var h = '<header class="home-top">' + brand() + '<div class="top-actions">' +
+      (connected() && !S.demo ? '<button class="btn small" data-act="sync">Aktualisieren</button>' : '') +
+      '<button class="btn small" data-act="settings">Einstellungen</button></div></header>';
+    h += '<section class="lib-head"><div><h1>Meine Workshops</h1><p class="sync"></p></div></section>';
+    if (S.demo) h += '<div class="banner"><p>Das ist ein Beispiel. Deine eigenen Workshops erscheinen, sobald die App mit Dropbox verbunden ist.</p><div class="row-actions"><button class="btn small" data-act="demo-off">Beispiel schließen</button><button class="btn small solid" data-act="settings">Mit Dropbox verbinden</button></div></div>';
+    if (!connected() && !S.demo) {
+      h += '<section class="connect"><h2>Mit Dropbox verbinden</h2>' +
+        '<p>Deine Workshops liegen als Textdateien in deiner Dropbox, im Ordner „Moderationsdeck/workshops“. Die App liest sie von dort und speichert sie auf diesem Gerät, damit du sie auch offline hast.</p>' +
+        '<div class="row-actions"><button class="btn solid" data-act="settings">Mit Dropbox verbinden</button><button class="btn" data-act="demo-on">Beispiel ansehen</button></div></section>';
+    } else {
+      h += '<div class="ws-grid">' + fs.map(function (x) {
+        var cs = x.d.cards;
+        return '<button class="ws" data-act="open" data-k="' + esc(x.f.key) + '">' + (x.f.demo ? '<span class="tag">Beispiel</span>' : '') +
+          '<h2>' + fmt(x.d.title || x.f.name.replace(/\.md$/i, '')) + '</h2>' + (x.d.sub ? '<p class="sub">' + fmt(x.d.sub) + '</p>' : '') +
+          (cs.length ? flow(cs) : '') + '<p class="meta num">' + cs.length + ' ' + (cs.length === 1 ? 'Karte' : 'Karten') + ' · ' + dur(total(cs)) + '</p></button>';
+      }).join('') + (canEdit ? '<button class="ws add" data-act="new-ws">+ Neuer Workshop</button>' : '') + '</div>';
+      if (!fs.length && !S.syncing) h += '<p class="sync-note" style="color:var(--ink-2)">Im Ordner ' + esc(pref.folder) + ' liegen noch keine Workshops.</p>';
+    }
+    $('view').innerHTML = h;
+    renderStatus();
+  }
+
+  /* ---------- Ein Workshop ---------- */
+  function openWs(k) { S.cur = k; S.view = 'ws'; renderWs(); window.scrollTo(0, 0); }
+  function renderWs() {
+    S.view = 'ws';
+    var f = fileByKey(S.cur); if (!f) { renderLib(); return; }
+    var d = deckOf(f), cs = d.cards, akt = cs.filter(function (c) { return c.art === 'aktiv'; }).length;
+    var canEdit = connected() && !S.demo;
+    var h = '<header class="home-top"><button class="btn small" data-act="lib">‹ Alle Workshops</button><div class="top-actions"><span class="sync"></span><button class="btn small" data-act="theme" data-theme-label>Ansicht: ' + themeLabel() + '</button></div></header>';
+    h += '<section class="hero">' +
+      '<p class="eyebrow num">' + cs.length + ' Karten · ' + dur(total(cs)) + ' · ' + akt + '× TN aktiv</p>' +
+      '<h1>' + fmt(d.title || f.name) + '</h1>' + (d.sub ? '<p class="sub">' + fmt(d.sub) + '</p>' : '') +
+      (cs.length ? flow(cs) : '') +
+      '<div class="legend"><span><i style="background:var(--lime)"></i>Ich spreche</span><span><i style="background:var(--violet)"></i>TN aktiv</span><span><i style="background:var(--falle)"></i>Achtung Falle</span></div>' +
+      (cs.length ? '<div class="hero-actions"><button class="btn solid" data-act="start" data-i="0">Moderieren</button><button class="btn" data-act="start-learn">Lernen</button></div>' : '') +
+      '</section>';
+    h += '<section class="agenda"><h2>Ablauf</h2>';
+    if (!cs.length) h += '<p style="color:var(--ink-2)">Dieser Workshop hat noch keine Karten. Jede Karte beginnt mit „## Titel“.</p>';
+    h += '<ol>' + cs.map(function (c, i) {
+      return '<li><button class="row" data-act="start" data-i="' + i + '"><span class="n num">' + (i + 1) + '</span>' +
+        '<span><span class="badge ' + c.art + '">' + ART[c.art].label + '</span></span>' +
+        '<span class="t">' + fmt(c.title) + '</span>' +
+        '<span class="f' + (c.fallen.length ? '' : ' none') + '">⚠ Falle</span>' +
+        '<span class="m num">' + (c.minutes ? c.minutes + ' min' : '') + '</span></button>' +
+        (canEdit ? '<button class="edit-btn" data-act="edit-card" data-i="' + i + '">Bearbeiten</button>' : '') + '</li>';
+    }).join('') + '</ol>';
+    if (canEdit) h += '<div class="ws-tools"><button class="btn small" data-act="add-card">+ Karte hinzufügen</button><button class="btn small" data-act="edit-file">Ganze Datei bearbeiten</button></div>';
+    h += '</section>';
+    $('view').innerHTML = h;
+    renderStatus();
+  }
+
+  /* ---------- Bearbeiten ---------- */
+  function openEditor(mode, i) {
+    var f = fileByKey(S.cur); if (!f) return;
+    var text = mode === 'file' ? f.text : mode === 'card' ? getSection(f.text, i) : '## Neue Karte | 10 min | Ich spreche\n> \n- ';
+    var title = mode === 'file' ? 'Ganze Datei bearbeiten' : mode === 'card' ? 'Karte ' + (i + 1) + ' bearbeiten' : 'Neue Karte';
+    S.edit = { mode: mode, i: i, key: f.key };
+    $('sheetBox').className = 'sheet-box form';
+    $('sheetBox').innerHTML = '<div class="sheet-head"><h2>' + title + '</h2></div>' +
+      '<textarea id="edText" spellcheck="true" autocapitalize="sentences">' + esc(text) + '</textarea>' +
+      '<details class="help"><summary>So funktioniert das Format</summary><pre>' + esc(FORMAT_HELP) + '</pre></details>' +
+      '<p class="err-msg" id="edErr" hidden></p>' +
+      '<div class="sheet-foot"><span class="hint">' + (mode === 'card' ? 'Leer speichern löscht die Karte.' : 'Wird direkt in deiner Dropbox gespeichert.') + '</span>' +
+      '<button class="btn" data-act="close">Abbrechen</button><button class="btn solid" data-act="save-edit" id="saveBtn">Speichern</button></div>';
+    $('sheet').hidden = false;
+  }
+  async function saveEdit() {
+    var e = S.edit, f = fileByKey(e.key), err = $('edErr'), btn = $('saveBtn');
+    if (!f) return;
+    if (!navigator.onLine) { err.hidden = false; err.textContent = 'Zum Speichern brauchst du gerade Internet. Dein Text bleibt hier stehen, bis du wieder online bist.'; return; }
+    var val = $('edText').value.replace(/\r/g, '');
+    var next = e.mode === 'file' ? val.replace(/\s*$/, '\n') : e.mode === 'card' ? replaceSection(f.text, e.i, val) : appendSection(f.text, val);
+    btn.disabled = true; btn.textContent = 'Speichert …'; err.hidden = true;
+    try {
+      var meta = await upload(f.path, next, f.rev);
+      store.files[f.key] = { path: meta.path_display, name: meta.name, rev: meta.rev, modified: meta.server_modified, text: next };
+      saveStore(); closeSheet(); renderWs(); toast('Gespeichert');
+    } catch (x) {
+      btn.disabled = false; btn.textContent = 'Speichern';
+      err.hidden = false; err.textContent = errText(x);
+    }
+  }
+  function slug(t) {
+    return (t.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'workshop').slice(0, 60);
+  }
+  function openNewWs() {
+    $('sheetBox').className = 'sheet-box form';
+    $('sheetBox').innerHTML = '<div class="sheet-head"><h2>Neuer Workshop</h2></div>' +
+      '<label class="field"><span>Titel</span><input type="text" id="nwTitle" placeholder="Teamtag Feedbackkultur"></label>' +
+      '<p class="err-msg" id="nwErr" hidden></p>' +
+      '<div class="sheet-foot"><span class="hint">Legt eine neue Datei im Ordner „workshops“ an.</span><button class="btn" data-act="close">Abbrechen</button><button class="btn solid" data-act="create-ws" id="nwBtn">Anlegen</button></div>';
+    $('sheet').hidden = false;
+    setTimeout(function () { var i = $('nwTitle'); if (i) i.focus(); }, 50);
+  }
+  async function createWs() {
+    var t = $('nwTitle').value.trim(), err = $('nwErr'), btn = $('nwBtn');
+    if (!t) { err.hidden = false; err.textContent = 'Gib dem Workshop einen Titel.'; return; }
+    if (!navigator.onLine) { err.hidden = false; err.textContent = 'Zum Anlegen brauchst du gerade Internet.'; return; }
+    var base = slug(t), name = base + '.md', n = 2;
+    while (store.files[(pref.folder + '/' + name).toLowerCase()]) name = base + '-' + (n++) + '.md';
+    var text = '# ' + t + '\nUntertitel: \n\n## Ankommen | 10 min | Ich spreche\n> \n- \n';
+    btn.disabled = true; btn.textContent = 'Legt an …';
+    try {
+      var meta = await upload(pref.folder + '/' + name, text, null);
+      store.files[meta.path_lower] = { path: meta.path_display, name: meta.name, rev: meta.rev, modified: meta.server_modified, text: text };
+      saveStore(); closeSheet(); openWs(meta.path_lower); openEditor('file');
+    } catch (x) { btn.disabled = false; btn.textContent = 'Anlegen'; err.hidden = false; err.textContent = errText(x); }
+  }
+
+  /* ---------- Einstellungen ---------- */
+  async function openSettings() {
+    var k = appKey(), h = '<div class="sheet-head"><h2>Einstellungen</h2><button class="pbtn" data-act="close">Schließen</button></div>';
+    h += '<section class="set-sec"><h3>Dropbox</h3>';
+    if (!k) {
+      h += '<p>Für die Verbindung braucht die App einen App-Schlüssel von Dropbox. Füge ihn hier ein.</p>' +
+        '<label class="field"><span>App-Schlüssel</span><input type="text" id="setKey" autocapitalize="off" autocomplete="off" spellcheck="false"></label>' +
+        '<div class="row-actions"><button class="btn solid" data-act="save-key">Übernehmen</button></div>';
+    } else if (!connected()) {
+      S.connectUrl = '';
+      h += '<ol class="steps">' +
+        '<li><p>Bei Dropbox anmelden und den Zugriff erlauben. Dropbox zeigt dir danach einen Code.</p><a class="btn solid" id="dbxLink" href="#" target="_blank" rel="noopener">Bei Dropbox anmelden</a></li>' +
+        '<li><p>Den Code kopieren, hierher zurückkommen und einfügen.</p><label class="field"><span>Code von Dropbox</span><input type="text" id="setCode" autocapitalize="off" autocomplete="off" spellcheck="false"></label></li>' +
+        '<li><button class="btn solid" data-act="connect">Verbinden</button></li></ol><p class="err-msg" id="setErr" hidden></p>';
+    } else {
+      h += '<p>Verbunden. Die App liest die Workshops aus diesem Ordner deiner Dropbox:</p>' +
+        '<label class="field"><span>Ordner</span><input type="text" id="setFolder" value="' + esc(pref.folder) + '" autocapitalize="off" spellcheck="false"></label>' +
+        '<div class="row-actions"><button class="btn small" data-act="save-folder">Ordner übernehmen</button><button class="btn small" data-act="disconnect">Verbindung trennen</button></div>';
+    }
+    h += '</section>';
+    h += '<section class="set-sec"><h3>Ansicht</h3><div class="row-actions"><button class="btn small" data-act="theme" data-theme-label>Ansicht: ' + themeLabel() + '</button></div></section>';
+    h += '<section class="set-sec"><h3>Als App auf dem iPad</h3><p>In Safari auf „Teilen“ tippen und „Zum Home-Bildschirm“ wählen. Dann startet das Moderationsdeck ohne Browserleisten und funktioniert auch offline.</p><p class="num" style="font-size:.85rem">Version ' + VERSION + '</p></section>';
+    $('sheetBox').className = 'sheet-box form';
+    $('sheetBox').innerHTML = h;
+    $('sheet').hidden = false;
+    if (k && !connected()) {
+      try { var url = await prepareConnect(); var a = $('dbxLink'); if (a) a.href = url; }
+      catch (e) { var er = $('setErr'); if (er) { er.hidden = false; er.textContent = 'Die Anmeldung funktioniert nur über die Internetadresse der App, nicht aus einer lokalen Datei.'; } }
+    }
+  }
+  async function doConnect() {
+    var code = ($('setCode').value || '').trim(), err = $('setErr');
+    if (!code) { err.hidden = false; err.textContent = 'Füge zuerst den Code von Dropbox ein.'; return; }
+    try { await exchange(code); S.demo = false; closeSheet(); toast('Mit Dropbox verbunden'); renderLib(); sync(); }
+    catch (x) { err.hidden = false; err.textContent = errText(x); }
+  }
+  var disarmAt = 0;
+
+  /* ---------- Moderieren ---------- */
+  var P = null, deck = null, wake = null;
+  function requestWake() { try { if (navigator.wakeLock && !wake) navigator.wakeLock.request('screen').then(function (w) { wake = w; w.addEventListener('release', function () { wake = null; }); }, function () {}); } catch (e) {} }
+
+  function start(idx, learn) {
+    var f = fileByKey(S.cur); if (!f) return;
+    deck = deckOf(f); if (!deck.cards.length) return;
+    P = { idx: idx || 0, learn: !!learn, back: null, revealed: 0, items: 0 };
+    S.view = 'present';
+    document.documentElement.style.setProperty('--fs', pref.fs);
+    $('view').hidden = true; $('pr').hidden = false;
+    requestWake(); render(true);
+  }
+  function exit() {
+    closeSheet(); $('pr').hidden = true; $('view').hidden = false; P = null;
+    try { wake && wake.release(); } catch (e) {} wake = null;
+    renderWs(); window.scrollTo(0, 0);
+  }
+  function go(i, jump) {
+    var n = deck.cards.length;
+    if (!P || i == null || !n) return;
+    i = Math.max(0, Math.min(n - 1, i));
+    if (i === P.idx) return;
+    var dir = i < P.idx ? 'back' : 'fwd';
+    if (jump) P.back = P.idx; else if (i === P.back) P.back = null;
+    P.idx = i; P.revealed = 0;
+    render(true, dir);
+  }
+
+  function list(items, tag) { return '<' + tag + '>' + items.map(function (t) { return '<li class="rv">' + fmt(t) + '</li>'; }).join('') + '</' + tag + '>'; }
+  function render(animate, dir) {
+    var cs = deck.cards, c = cs[P.idx], A = ART[c.art];
+    var before = total(cs.slice(0, P.idx));
+    $('prTitle').innerHTML = fmt(deck.title || 'Workshop');
+    $('prPos').textContent = 'Karte ' + (P.idx + 1) + ' von ' + cs.length + ' · ' + before + ' von ' + total(cs) + ' min' + (P.learn ? ' · Lernmodus' : '');
+    $('learnBtn').textContent = P.learn ? 'Lernmodus an' : 'Lernen';
+    $('learnBtn').classList.toggle('on', P.learn);
+    $('prevBtn').disabled = P.idx <= 0;
+    $('nextBtn').disabled = P.idx >= cs.length - 1;
+
+    var h = '<header class="c-head rv"><span class="badge ' + c.art + '">' + A.label + '</span>' + (c.minutes ? '<span class="c-min num">' + c.minutes + ' min</span>' : '') + '</header>';
+    h += '<h2 class="c-title">' + fmt(c.title) + '</h2>';
+    if (c.say.length) h += '<div class="c-say rv"><span class="c-lbl">' + A.say + '</span>' + c.say.map(fmt).join('<br>') + '</div>';
+    var secs = [];
+    if (c.steps.length) secs.push('<section class="c-sec"><span class="c-lbl">' + A.steps + '</span>' + list(c.steps, 'ol') + '</section>');
+    if (c.points.length) secs.push('<section class="c-sec"><span class="c-lbl">Kernpunkte</span>' + list(c.points, 'ul') + '</section>');
+    if (c.art === 'sprechen') secs.reverse();
+    if (secs.length) h += '<div class="c-cols">' + secs.join('') + '</div>';
+    c.fallen.forEach(function (x) { h += '<div class="c-falle rv"><b>⚠ Achtung Falle</b>' + fmt(x) + '</div>'; });
+    if (c.note.length) h += '<footer class="c-foot"><div class="rv"><span class="c-lbl">Notiz</span>' + c.note.map(fmt).join('<br>') + '</div></footer>';
+    if (P.learn) h += '<div class="learnbar"><span id="learnHint"></span><button class="btn small" data-act="reveal-all">Alles zeigen</button></div>';
+
+    var card = $('card');
+    card.className = 'card ' + c.art;
+    card.innerHTML = h;
+    card.scrollTop = 0;
+    if (animate) { void card.offsetWidth; card.classList.add('anim'); if (dir === 'back') card.classList.add('back'); }
+    P.items = card.querySelectorAll('.rv').length;
+    applyReveal();
+
+    $('timeline').innerHTML = cs.map(function (x, i) { return '<i class="' + x.art + (i < P.idx ? ' done' : '') + (i === P.idx ? ' now' : '') + '" style="flex:' + Math.max(1, x.minutes || 3) + '"></i>'; }).join('');
+    var nx = cs[P.idx + 1];
+    $('nextup').innerHTML = nx ? ' · Als Nächstes: <b>' + fmt(nx.title) + '</b>' : ' · <b>Letzte Karte</b>';
+    var r = $('retBtn');
+    if (P.back != null && P.back !== P.idx && cs[P.back]) { r.hidden = false; r.textContent = '↩ Zurück zu Karte ' + (P.back + 1) + ': ' + cs[P.back].title.replace(/\*\*/g, ''); }
+    else r.hidden = true;
+  }
+  function applyReveal() {
+    var card = $('card'), on = P.learn;
+    card.querySelectorAll('.rv').forEach(function (el, i) { el.classList.toggle('hid', on && i >= P.revealed); });
+    card.querySelectorAll('.c-sec').forEach(function (s) { var first = s.querySelector('.rv'); s.classList.toggle('lbl-hid', !!(first && first.classList.contains('hid'))); });
+    card.classList.toggle('neutral', on && P.revealed < 1);
+    var hint = $('learnHint');
+    if (hint) hint.textContent = P.revealed >= P.items ? 'Alles aufgedeckt' : 'Auf die Karte tippen zum Aufdecken · ' + P.revealed + ' von ' + P.items;
+  }
+  function revealNext() { if (P && P.learn && P.revealed < P.items) { P.revealed++; applyReveal(); return true; } return false; }
+
+  function openOverview() {
+    var cs = deck.cards;
+    $('sheetBox').className = 'sheet-box';
+    $('sheetBox').innerHTML = '<div class="sheet-head"><h2>Übersicht</h2><span class="num">' + cs.length + ' Karten · ' + dur(total(cs)) + '</span><button class="pbtn" data-act="close">Schließen</button></div>' +
+      '<div class="ov-grid">' + cs.map(function (c, i) {
+        return '<button class="ov ' + c.art + (i === P.idx ? ' now' : '') + '" data-act="jump" data-i="' + i + '">' +
+          '<span class="ov-top"><span class="num">' + (i + 1) + (i === P.idx ? ' · jetzt' : '') + '</span><span class="num">' + (c.minutes ? c.minutes + ' min' : '') + '</span></span>' +
+          '<span><span class="badge ' + c.art + '">' + ART[c.art].label + '</span></span>' +
+          '<b>' + fmt(c.title) + '</b>' + (c.fallen.length ? '<span class="fl">⚠ Falle</span>' : '') + '</button>';
+      }).join('') + '</div>';
+    $('sheet').hidden = false;
+  }
+  function closeSheet() { $('sheet').hidden = true; $('sheetBox').innerHTML = ''; S.edit = null; }
+
+  var toastT = null;
+  function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 2800); }
+
+  /* ---------- Bedienung ---------- */
+  var armedAt = 0;
+  function tryExit() {
+    var b = $('exitBtn');
+    if (Date.now() - armedAt < 3000) { armedAt = 0; b.textContent = 'Beenden'; b.classList.remove('armed'); exit(); return; }
+    armedAt = Date.now(); b.textContent = 'Nochmal tippen'; b.classList.add('armed');
+    setTimeout(function () { if (Date.now() - armedAt >= 2900) { b.textContent = 'Beenden'; b.classList.remove('armed'); } }, 3000);
+  }
+  function font(d) { pref.fs = Math.round(Math.max(0.8, Math.min(1.6, pref.fs + d)) * 10) / 10; savePref(); document.documentElement.style.setProperty('--fs', pref.fs); }
+
+  var swipedAt = 0;
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) {
+      if (P && P.learn && e.target.closest('#card') && Date.now() - swipedAt > 400) revealNext();
+      return;
+    }
+    if (b.disabled) return;
+    var i = +b.dataset.i || 0;
+    switch (b.dataset.act) {
+      case 'open': openWs(b.dataset.k); break;
+      case 'lib': renderLib(); window.scrollTo(0, 0); break;
+      case 'sync': sync(true); break;
+      case 'settings': openSettings(); break;
+      case 'demo-on': S.demo = true; renderLib(); break;
+      case 'demo-off': S.demo = false; renderLib(); break;
+      case 'new-ws': openNewWs(); break;
+      case 'create-ws': createWs(); break;
+      case 'edit-card': openEditor('card', i); break;
+      case 'edit-file': openEditor('file'); break;
+      case 'add-card': openEditor('new'); break;
+      case 'save-edit': saveEdit(); break;
+      case 'save-key': { var v = ($('setKey').value || '').trim(); if (v) { pref.appKey = v; savePref(); openSettings(); } break; }
+      case 'connect': doConnect(); break;
+      case 'save-folder': { var fv = ($('setFolder').value || '').trim().replace(/\/+$/, ''); if (fv) { if (fv[0] !== '/') fv = '/' + fv; pref.folder = fv; savePref(); store.files = {}; saveStore(); closeSheet(); renderLib(); sync(true); } break; }
+      case 'disconnect':
+        if (Date.now() - disarmAt < 3000) { auth = null; saveAuth(); store = { files: {}, lastSync: 0 }; saveStore(); closeSheet(); renderLib(); toast('Verbindung getrennt'); }
+        else { disarmAt = Date.now(); b.textContent = 'Nochmal tippen zum Trennen'; b.classList.add('armed'); }
+        break;
+      case 'start': start(i, false); break;
+      case 'start-learn': start(0, true); break;
+      case 'theme': cycleTheme(); break;
+      case 'exit': tryExit(); break;
+      case 'prev': go(P.idx - 1); break;
+      case 'next': go(P.idx + 1); break;
+      case 'return': go(P.back); break;
+      case 'learn': P.learn = !P.learn; P.revealed = 0; render(false); break;
+      case 'reveal-all': P.revealed = P.items; applyReveal(); break;
+      case 'font+': font(0.1); break;
+      case 'font-': font(-0.1); break;
+      case 'overview': openOverview(); break;
+      case 'close': closeSheet(); break;
+      case 'jump': closeSheet(); go(i, true); break;
+    }
+  });
+  $('sheet').addEventListener('click', function (e) { if (e.target === $('sheet') && !S.edit) closeSheet(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (!P) return;
+    if (!$('sheet').hidden) { if (e.key === 'Escape') closeSheet(); return; }
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown') { e.preventDefault(); go(P.idx + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(P.idx - 1); }
+    else if (k === ' ' || k === 'Enter' || k === 'ArrowDown') { e.preventDefault(); if (!revealNext()) go(P.idx + 1); }
+    else if (k === 'ArrowUp') { e.preventDefault(); go(P.idx - 1); }
+    else if (k === 'o' || k === 'O') openOverview();
+    else if (k === 'l' || k === 'L') { P.learn = !P.learn; P.revealed = 0; render(false); }
+    else if (k === 'Escape') tryExit();
+  });
+
+  var sx = 0, sy = 0, st = 0, stage = $('stage');
+  stage.addEventListener('touchstart', function (e) { var t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); }, { passive: true });
+  stage.addEventListener('touchend', function (e) {
+    if (!P) return;
+    var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6 && Date.now() - st < 800) { swipedAt = Date.now(); go(P.idx + (dx < 0 ? 1 : -1)); }
+  }, { passive: true });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') return;
+    if (P) requestWake();
+    else if (Date.now() - store.lastSync > 60000) sync();
+  });
+  window.addEventListener('online', function () { renderStatus(); if (!P) sync(); });
+  window.addEventListener('offline', renderStatus);
+
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function () {});
+  applyTheme();
+  renderLib();
+  if (connected()) sync();
+})();
+</script>
+</body>
+</html>
