@@ -1,5 +1,5 @@
 /* Moderationsdeck: hält die App offline verfügbar. Workshops speichert die App selbst. */
-const CACHE = 'moderationsdeck-v2';
+const CACHE = 'moderationsdeck-v3';
 const FONTS = 'moderationsdeck-fonts';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 

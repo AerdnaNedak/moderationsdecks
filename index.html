@@ -244,6 +244,17 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
 .set-sec h3 { font-size: 1.1rem; }
 .set-sec p { color: var(--ink-2); }
 .row-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.pack { padding-top: 8px; }
+.pack h2 { font-size: .85rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+.pack-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.pack-head h2 { margin: 0; }
+.pack ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pk { width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: start; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); text-align: left; }
+.pk .box { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--ink-2); display: grid; place-items: center; font-weight: 700; font-size: .9rem; line-height: 1; }
+.pk .what { font-weight: 700; font-size: 1.05rem; overflow-wrap: anywhere; }
+.pk .from { display: block; font-weight: 400; font-size: .88rem; color: var(--ink-2); margin-top: 2px; }
+.pk.on .box { background: var(--solid); border-color: var(--solid); color: var(--on-solid); }
+.pk.on .what { text-decoration: line-through; color: var(--ink-2); }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; background: var(--solid); color: var(--on-solid); padding: 12px 20px; border-radius: 10px; font-weight: 700; max-width: calc(100% - 32px); }
 </style>
 </head>
@@ -280,15 +291,15 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
   var APP_KEY = 'prtle6jx22kouds';
   var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
-  var VERSION = '1.0';
+  var VERSION = '1.1';
 
   var SAMPLE = [
     '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
     '## Ankommen und Erwartungen | 10 min | Ich spreche', '> Schön, dass ihr da seid. Heute geht es darum, was KI euch im Büroalltag konkret abnehmen kann.',
-    '- Ablauf des Tages kurz vorstellen', '- Handys sind erlaubt, wir probieren live aus', '- Erwartungen auf Karten sammeln', '',
+    '- Ablauf des Tages kurz vorstellen', '- Handys sind erlaubt, wir probieren live aus', '- Erwartungen auf Karten sammeln', 'Material: Moderationskarten, Pinnwand', '',
     '## Zeitfresser-Inventur | 20 min | TN aktiv', '> Schreibt die drei Aufgaben auf, die euch jede Woche am meisten Zeit kosten.',
     '1. Jede Person notiert drei Zeitfresser, eine Karte pro Aufgabe', '2. Zu zweit vergleichen und Gemeinsamkeiten markieren', '3. Karten an die Pinnwand, nach Häufigkeit clustern',
-    '! Gruppen fangen an, über Lösungen zu sprechen. Erst sammeln, Lösungen kommen später.', '',
+    '! Gruppen fangen an, über Lösungen zu sprechen. Erst sammeln, Lösungen kommen später.', 'Material: Karten in drei Farben, Stifte', '',
     '## Was KI kann und was nicht | 15 min | Ich spreche', '> KI ist keine Zauberei, sondern ein sehr schneller Praktikant ohne Kontextwissen.',
     '- Gut: Texte entwerfen, zusammenfassen, umformulieren', '- Mittel: Recherche, nur mit Quellenprüfung', '- Schlecht: Entscheidungen ohne Kontext, vertrauliche Daten',
     '! Fragen zum Datenschutz kommen hier fast immer. Kurz beantworten, Details auf den Themenspeicher.', 'Notiz: Ein Beispiel aus dem eigenen Büroalltag erzählen', '',
@@ -385,6 +396,8 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   var store = Object.assign({ files: {}, lastSync: 0 }, lsGet('md.store', {}));
   var S = { view: 'lib', cur: null, demo: false, syncing: false, syncErr: '', edit: null, connectUrl: '' };
   var parsed = {};
+  var packed = lsGet('md.packed', {});
+  function packId(c) { return (c.title + '|' + c.material).slice(0, 200); }
   function savePref() { lsSet('md.pref', pref); }
   function saveStore() { lsSet('md.store', store); }
   function saveAuth() { lsSet('md.auth', auth); }
@@ -569,6 +582,17 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     }).join('') + '</ol>';
     if (canEdit) h += '<div class="ws-tools"><button class="btn small" data-act="add-card">+ Karte hinzufügen</button><button class="btn small" data-act="edit-file">Ganze Datei bearbeiten</button></div>';
     h += '</section>';
+    var mats = cs.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) { return x.c.material; });
+    if (mats.length) {
+      var done = packed[f.key] || [], nDone = mats.filter(function (x) { return done.indexOf(packId(x.c)) >= 0; }).length;
+      h += '<section class="pack"><div class="pack-head"><h2>Material · ' + nDone + ' von ' + mats.length + ' gepackt</h2>' +
+        (nDone ? '<button class="btn small" data-act="pack-reset">Haken zurücksetzen</button>' : '') + '</div><ul>' +
+        mats.map(function (x) {
+          var on = done.indexOf(packId(x.c)) >= 0;
+          return '<li><button class="pk' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="pack" data-i="' + x.i + '"><span class="box" aria-hidden="true">' + (on ? '✓' : '') + '</span>' +
+            '<span class="what">' + fmt(x.c.material) + '<span class="from">Karte ' + (x.i + 1) + ' · ' + fmt(x.c.title) + '</span></span></button></li>';
+        }).join('') + '</ul></section>';
+    }
     $('view').innerHTML = h;
     renderStatus();
   }
@@ -815,6 +839,15 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
       case 'font-': font(-0.1); break;
       case 'overview': openOverview(); break;
       case 'close': closeSheet(); break;
+      case 'pack': {
+        var pf = fileByKey(S.cur); if (!pf) break;
+        var pid = packId(deckOf(pf).cards[i]), arr = packed[pf.key] || [], at = arr.indexOf(pid);
+        if (at >= 0) arr.splice(at, 1); else arr.push(pid);
+        packed[pf.key] = arr; lsSet('md.packed', packed);
+        var y = window.scrollY; renderWs(); window.scrollTo(0, y);
+        break;
+      }
+      case 'pack-reset': { var rf = fileByKey(S.cur); if (rf) { delete packed[rf.key]; lsSet('md.packed', packed); var ry = window.scrollY; renderWs(); window.scrollTo(0, ry); } break; }
       case 'jump': closeSheet(); go(i, true); break;
     }
   });
