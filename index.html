@@ -305,7 +305,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
   var APP_KEY = 'prtle6jx22kouds';
   var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
-  var VERSION = '1.3';
+  var VERSION = '1.4';
 
   var SAMPLE = [
     '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
@@ -772,12 +772,17 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     if (blockShown(c)) h = '<p class="c-block">' + fmt(c.block.title) + '</p>' + h;
     h += '<h2 class="c-title">' + fmt(c.title) + '</h2>';
     if (c.goal) h += '<p class="c-goal rv"><b>Ziel</b>' + fmt(c.goal) + '</p>';
-    if (c.say.length) h += '<div class="c-say rv"><span class="c-lbl">' + A.say + '</span>' + c.say.map(fmt).join('<br>') + '</div>';
+    var reEnd = /^schluss\s*:\s*/i, reStart = /^einstieg\s*:\s*/i;
+    var sayTop = c.say.filter(function (x) { return !reEnd.test(x); });
+    var sayEnd = c.say.filter(function (x) { return reEnd.test(x); }).map(function (x) { return x.replace(reEnd, ''); });
+    var onlyStart = sayTop.length && sayTop.every(function (x) { return reStart.test(x); });
+    if (sayTop.length) h += '<div class="c-say rv"><span class="c-lbl">' + (onlyStart ? 'Einstieg' : A.say) + '</span>' + sayTop.map(function (x) { return fmt(onlyStart ? x.replace(reStart, '') : x); }).join('<br>') + '</div>';
     var secs = [];
     if (c.steps.length) secs.push('<section class="c-sec"><span class="c-lbl">' + A.steps + '</span>' + stepList(c.steps) + '</section>');
     if (c.points.length) secs.push('<section class="c-sec"><span class="c-lbl">Kernpunkte</span>' + list(c.points, 'ul') + '</section>');
     if (c.art === 'sprechen') secs.reverse();
     if (secs.length) h += '<div class="c-cols">' + secs.join('') + '</div>';
+    if (sayEnd.length) h += '<div class="c-say rv"><span class="c-lbl">Schluss</span>' + sayEnd.map(fmt).join('<br>') + '</div>';
     c.fallen.forEach(function (x) { h += '<div class="c-falle rv"><b>⚠ Achtung Falle</b>' + fmt(x) + '</div>'; });
     if (c.note.length) h += '<footer class="c-foot"><div class="rv"><span class="c-lbl">Notiz</span>' + c.note.map(fmt).join('<br>') + '</div></footer>';
     if (P.learn) h += '<div class="learnbar"><span id="learnHint"></span><button class="btn small" data-act="reveal-all">Alles zeigen</button></div>';
