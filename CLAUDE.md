@@ -19,7 +19,7 @@ Web-App (PWA) für Moderationskarten auf dem iPad. Andrea nutzt sie als Web-App 
 
 ## Design
 
-Farben von work-with-ease.com: Ich spreche = Lindgrün, TN aktiv = Violett, Achtung Falle = gedämpftes Pink, Pause = Grau. Schrift Space Grotesk. Hell und dunkel. Material wird nicht auf den Karten angezeigt, nur in der Packliste.
+Farben von work-with-ease.com: Ich spreche = Lindgrün, TN aktiv = Violett, Achtung Falle = gedämpftes Pink, Pause = Grau. Schrift Space Grotesk. Hell: Creme mit Tannengrün. Dunkel: fast schwarzer Hintergrund, stahlgraue Karten mit farbigem Rand (grün bzw. violett, TN-aktiv-Karten violett getönt), kaum Grün. Material wird nicht auf den Karten angezeigt, nur in der Packliste.
 
 ## Prüfen
 

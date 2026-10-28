@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Moderation">
 <meta name="theme-color" content="#F6F4EC" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#092F26" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0B0B0C" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
@@ -39,6 +39,10 @@
   --on-solid: #F6F4EC;
   --tint-sprechen: color-mix(in srgb, var(--lime) 16%, var(--surface));
   --tint-aktiv: color-mix(in srgb, var(--violet) 7%, var(--surface));
+  --box: var(--surface);
+  --edge-sprechen: var(--line);
+  --edge-aktiv: var(--line);
+  --edge-w: 1px;
   --f: "Space Grotesk", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --fs: 1;
   --side: 86px;
@@ -46,22 +50,20 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #092F26; --surface: #0F3D32; --ink: #EEF3EE; --ink-2: #A9C2B6; --line: #1D5A4A; --ghost: #1A5244;
-    --violet: #7A4DF0; --solid: #EEF3EE; --on-solid: #092F26; --falle: #FF6DB4;
-    --falle-bg: color-mix(in srgb, var(--falle) 24%, var(--surface));
-    --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
-    --tint-sprechen: color-mix(in srgb, var(--lime) 7%, var(--surface));
-    --tint-aktiv: color-mix(in srgb, var(--violet) 16%, var(--surface));
+    --bg: #0B0B0C; --surface: #40444B; --box: #40444B; --ink: #FFFFFF; --ink-2: #D0D4DA; --line: #50555D; --ghost: #737983;
+    --violet: #B49BFF; --on-violet: #111214; --solid: #F2F2EE; --on-solid: #0B0B0C; --grey: #7A808A;
+    --falle: #FF8AC6; --falle-bg: #6A2E55; --falle-line: #FF8AC6;
+    --tint-sprechen: #5A5F68; --tint-aktiv: #58507A;
+    --edge-sprechen: #C7FF23; --edge-aktiv: #B49BFF; --edge-w: 2px;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #092F26; --surface: #0F3D32; --ink: #EEF3EE; --ink-2: #A9C2B6; --line: #1D5A4A; --ghost: #1A5244;
-  --violet: #7A4DF0; --solid: #EEF3EE; --on-solid: #092F26; --falle: #FF6DB4;
-  --falle-bg: color-mix(in srgb, var(--falle) 24%, var(--surface));
-  --falle-line: color-mix(in srgb, var(--falle) 75%, var(--surface));
-  --tint-sprechen: color-mix(in srgb, var(--lime) 7%, var(--surface));
-  --tint-aktiv: color-mix(in srgb, var(--violet) 16%, var(--surface));
+  --bg: #0B0B0C; --surface: #40444B; --box: #40444B; --ink: #FFFFFF; --ink-2: #D0D4DA; --line: #50555D; --ghost: #737983;
+  --violet: #B49BFF; --on-violet: #111214; --solid: #F2F2EE; --on-solid: #0B0B0C; --grey: #7A808A;
+  --falle: #FF8AC6; --falle-bg: #6A2E55; --falle-line: #FF8AC6;
+  --tint-sprechen: #5A5F68; --tint-aktiv: #58507A;
+  --edge-sprechen: #C7FF23; --edge-aktiv: #B49BFF; --edge-w: 2px;
   color-scheme: dark;
 }
 
@@ -137,9 +139,9 @@ h1, h2 { text-wrap: balance; }
 .side:active:not(:disabled) { transform: scale(.98); }
 .stage { grid-column: 2; grid-row: 3; position: relative; min-height: 0; display: grid; }
 
-.card { --pad: clamp(18px, 2.4vw, 34px); border-radius: 18px; border: 1px solid var(--line); background: var(--surface); padding: var(--pad); overflow: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: calc(var(--fs) * 15px); min-height: 0; }
-.card.sprechen { background: var(--tint-sprechen); }
-.card.aktiv { background: var(--tint-aktiv); }
+.card { --pad: clamp(18px, 2.4vw, 34px); border-radius: 18px; border: var(--edge-w) solid var(--line); background: var(--surface); padding: var(--pad); overflow: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: calc(var(--fs) * 15px); min-height: 0; }
+.card.sprechen { background: var(--tint-sprechen); border-color: var(--edge-sprechen); }
+.card.aktiv { background: var(--tint-aktiv); border-color: var(--edge-aktiv); }
 .card.pause { background: var(--surface); }
 .c-block { font-size: calc(var(--fs) * .95rem); font-weight: 700; letter-spacing: .02em; color: var(--ink-2); margin-bottom: -.4em; }
 .c-goal { font-size: calc(var(--fs) * 1rem); color: var(--ink-2); margin-top: -.3em; }
@@ -154,7 +156,7 @@ li.rahmen { list-style: none; font-style: italic; }
 .c-head .badge { font-size: calc(var(--fs) * .95rem); }
 .c-min { font-weight: 700; font-size: calc(var(--fs) * 1.05rem); }
 .c-title { font-size: calc(var(--fs) * clamp(1.5rem, 2.7vw, 2.2rem)); line-height: 1.05; letter-spacing: -.025em; font-weight: 700; }
-.c-say { font-size: calc(var(--fs) * clamp(1.3rem, 2.25vw, 1.7rem)); line-height: 1.35; padding: .55em .85em; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.c-say { font-size: calc(var(--fs) * clamp(1.3rem, 2.25vw, 1.7rem)); line-height: 1.35; padding: .55em .85em; border-radius: 10px; background: var(--box); border: 1px solid var(--line); }
 .c-lbl { display: block; font-size: calc(var(--fs) * .85rem); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: .45em; }
 .c-say .c-lbl { font-size: .5em; margin-bottom: .2em; }
 .c-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: calc(var(--fs) * 24px); }
@@ -310,7 +312,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
   var APP_KEY = 'prtle6jx22kouds';
   var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
-  var VERSION = '1.6';
+  var VERSION = '1.7';
 
   var SAMPLE = [
     '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
