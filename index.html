@@ -261,6 +261,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
 .pack { padding-top: 8px; }
 .pack h2 { font-size: .85rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
 .pack-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.pack-sub{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:18px 0 6px}
 .pack-head h2 { margin: 0; }
 .pack ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .pk { width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: start; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); text-align: left; }
@@ -305,7 +306,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
   var APP_KEY = 'prtle6jx22kouds';
   var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
-  var VERSION = '1.4';
+  var VERSION = '1.5';
 
   var SAMPLE = [
     '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
@@ -324,7 +325,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     '- Jede Person nennt einen Prompt, den sie ausprobiert', '- Danke sagen', ''
   ].join('\n');
 
-  var FORMAT_HELP = '# Titel des Workshops\nUntertitel: Anlass, Kunde, Datum\n\n## Block 1 · Name des Blocks | 25 min      (Blöcke sind freiwillig)\nZiel: steht klein auf jeder Karte des Blocks\n\n### Kartentitel | 10 min | Ich spreche     (oder: TN aktiv, Pause)\n> Satz, den ich wörtlich sage\n- Kernpunkt\n1. Schritt der Anleitung\nRahmen: Satz an die Gruppe, gehört zur Anleitung\n! Achtung Falle: worauf ich achten muss\nNotiz: nur für mich\nMaterial: erscheint in der Packliste\n\nOhne Blöcke beginnt jede Karte mit ## statt ###.';
+  var FORMAT_HELP = '# Titel des Workshops\nUntertitel: Anlass, Kunde, Datum\nMaterial: allgemeines Material (vor der ersten Karte, beliebig viele Zeilen)\n\n## Block 1 · Name des Blocks | 25 min      (Blöcke sind freiwillig)\nZiel: steht klein auf jeder Karte des Blocks\n\n### Kartentitel | 10 min | Ich spreche     (oder: TN aktiv, Pause)\n> Satz, den ich wörtlich sage\n- Kernpunkt\n1. Schritt der Anleitung\nRahmen: Satz an die Gruppe, gehört zur Anleitung\n! Achtung Falle: worauf ich achten muss\nNotiz: nur für mich\nMaterial: erscheint in der Packliste\n\nOhne Blöcke beginnt jede Karte mit ## statt ###.';
 
   var ART = {
     sprechen: { label: 'Ich spreche', say: 'Sagen', steps: 'Ablauf' },
@@ -382,7 +383,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   function hasBlocks(lines) { return lines.some(function (l) { return /^###\s/.test(l.trim()); }); }
   function parse(md) {
     var lines = String(md || '').replace(/\r/g, '').split('\n'), blocks = hasBlocks(lines);
-    var deck = { title: '', sub: '', cards: [], blocks: blocks }, cur = null, blk = null;
+    var deck = { title: '', sub: '', cards: [], blocks: blocks, material: [] }, cur = null, blk = null;
     lines.forEach(function (raw) {
       var l = raw.trim(), m;
       if (!l) return;
@@ -390,6 +391,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
       if (blocks && (m = l.match(/^##\s+(.*)/))) { var hb = header(m[1]); blk = { title: hb.title, minutes: hb.minutes, goal: '' }; cur = null; return; }
       if ((m = l.match(blocks ? /^###+\s+(.*)/ : /^##+\s+(.*)/))) { cur = header(m[1]); cur.block = blk; deck.cards.push(cur); return; }
       if (!cur) {
+        if (!blk && (m = l.match(/^materiale?(?:ien)?\s*:\s*(.*)/i))) { if (m[1]) deck.material.push(m[1]); return; }
         if (blk) { m = l.match(/^ziel\s*:\s*(.*)/i); if (m) blk.goal = m[1]; return; }
         m = l.match(/^untertitel\s*:\s*(.*)/i); if (m) deck.sub = m[1]; else if (!deck.sub) deck.sub = l; return;
       }
@@ -431,6 +433,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   var parsed = {};
   var packed = lsGet('md.packed', {});
   function packId(c) { return (c.title + '|' + c.material).slice(0, 200); }
+  function genId(t) { return ('allgemein|' + t).slice(0, 200); }
   function savePref() { lsSet('md.pref', pref); }
   function saveStore() { lsSet('md.store', store); }
   function saveAuth() { lsSet('md.auth', auth); }
@@ -617,15 +620,20 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     if (canEdit) h += '<div class="ws-tools"><button class="btn small" data-act="add-card">+ Karte hinzufügen</button><button class="btn small" data-act="edit-file">Ganze Datei bearbeiten</button></div>';
     h += '</section>';
     var mats = cs.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) { return x.c.material; });
-    if (mats.length) {
-      var done = packed[f.key] || [], nDone = mats.filter(function (x) { return done.indexOf(packId(x.c)) >= 0; }).length;
-      h += '<section class="pack"><div class="pack-head"><h2>Material · ' + nDone + ' von ' + mats.length + ' gepackt</h2>' +
-        (nDone ? '<button class="btn small" data-act="pack-reset">Haken zurücksetzen</button>' : '') + '</div><ul>' +
-        mats.map(function (x) {
-          var on = done.indexOf(packId(x.c)) >= 0;
-          return '<li><button class="pk' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="pack" data-i="' + x.i + '"><span class="box" aria-hidden="true">' + (on ? '✓' : '') + '</span>' +
-            '<span class="what">' + fmt(x.c.material) + '<span class="from">Karte ' + (x.i + 1) + ' · ' + fmt(x.c.title) + '</span></span></button></li>';
-        }).join('') + '</ul></section>';
+    var gen = d.material || [];
+    if (mats.length || gen.length) {
+      var done = packed[f.key] || [];
+      var nDone = gen.filter(function (t) { return done.indexOf(genId(t)) >= 0; }).length + mats.filter(function (x) { return done.indexOf(packId(x.c)) >= 0; }).length;
+      var item = function (on, attr, what, from) {
+        return '<li><button class="pk' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="pack" ' + attr + '><span class="box" aria-hidden="true">' + (on ? '✓' : '') + '</span>' +
+          '<span class="what">' + fmt(what) + (from ? '<span class="from">' + from + '</span>' : '') + '</span></button></li>';
+      };
+      h += '<section class="pack"><div class="pack-head"><h2>Material · ' + nDone + ' von ' + (gen.length + mats.length) + ' gepackt</h2>' +
+        (nDone ? '<button class="btn small" data-act="pack-reset">Haken zurücksetzen</button>' : '') + '</div>' +
+        (gen.length ? '<h3 class="pack-sub">Allgemein</h3><ul>' + gen.map(function (t, g) { return item(done.indexOf(genId(t)) >= 0, 'data-g="' + g + '"', t, ''); }).join('') + '</ul>' : '') +
+        (mats.length ? (gen.length ? '<h3 class="pack-sub">Pro Karte</h3>' : '') + '<ul>' + mats.map(function (x) {
+          return item(done.indexOf(packId(x.c)) >= 0, 'data-i="' + x.i + '"', x.c.material, 'Karte ' + (x.i + 1) + ' · ' + fmt(x.c.title));
+        }).join('') + '</ul>' : '') + '</section>';
     }
     $('view').innerHTML = h;
     renderStatus();
@@ -888,7 +896,8 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
       case 'close': closeSheet(); break;
       case 'pack': {
         var pf = fileByKey(S.cur); if (!pf) break;
-        var pid = packId(deckOf(pf).cards[i]), arr = packed[pf.key] || [], at = arr.indexOf(pid);
+        var gi = b.getAttribute('data-g'), pd = deckOf(pf);
+        var pid = gi !== null ? genId(pd.material[+gi]) : packId(pd.cards[i]), arr = packed[pf.key] || [], at = arr.indexOf(pid);
         if (at >= 0) arr.splice(at, 1); else arr.push(pid);
         packed[pf.key] = arr; lsSet('md.packed', packed);
         var y = window.scrollY; renderWs(); window.scrollTo(0, y);

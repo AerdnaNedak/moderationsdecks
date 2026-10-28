@@ -19,6 +19,7 @@ Die Workshops liegen bewusst nicht hier. Die App liest sie direkt aus der Dropbo
 ```
 # Titel des Workshops
 Untertitel: Anlass, Kunde, Datum
+Material: allgemeines Material (vor der ersten Karte, eine Zeile pro Eintrag)
 
 ## Block 1 · Name des Blocks | 25 min        (Blöcke sind freiwillig)
 Ziel: steht klein auf jeder Karte des Blocks

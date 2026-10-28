@@ -16,6 +16,7 @@ for (const file of process.argv.slice(2)) {
   const d = reader.parse(fs.readFileSync(file, 'utf8'));
   const total = d.cards.reduce((a, c) => a + (c.minutes || 0), 0);
   console.log(`\n${path.basename(file)}\n  Titel: ${d.title || '(fehlt)'}\n  Untertitel: ${d.sub || '(keiner)'}\n  ${d.cards.length} Karten · ${total} min · Blöcke: ${d.blocks ? 'ja' : 'nein'}`);
+  if (d.material && d.material.length) console.log(`  Allgemeines Material: ${d.material.length} Einträge`);
   if (!d.title) { console.log('  ! Kein Titel (Zeile "# Titel")'); problems++; }
   let prev;
   d.cards.forEach((c, i) => {

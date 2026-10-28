@@ -26,6 +26,7 @@ Sprich mit Andrea Deutsch, per du, ohne Fachjargon.
 ```
 # Titel des Workshops
 Untertitel: Kunde · Format · Dauer · Teilnehmende
+Material: allgemeines Material, das für den ganzen Tag gilt (eine Zeile pro Eintrag)
 
 ## Block 1 · Name des Blocks | 25 min
 Ziel: Ziel des Blocks (steht klein auf jeder Karte des Blocks)
@@ -60,7 +61,7 @@ Material: was sie dafür braucht (erscheint in der Packliste)
 | FALLE (nur für dich) | `!` auf der Karte, auf der die Falle passiert |
 | Regie, Tempo, Pausen aus einer Dramaturgie | `Notiz:` |
 | Flipchart-Sätze, Beispielsätze, Schlagworte | `-` Kernpunkte |
-| Karten, Flipchart vorbereitet, Timer, Handouts | `Material:` |
+| Karten, Flipchart vorbereitet, Timer, Handouts | `Material:` auf der Karte, die es braucht; was den ganzen Tag gilt (Technik, Moderationskoffer), als `Material:` vor der ersten Karte |
 
 ## Regeln für gute Karten
 
