@@ -13,6 +13,7 @@ Web-App (PWA) für Moderationskarten auf dem iPad. Andrea nutzt sie als Web-App 
 - `index.html`: die ganze App (CSS und JS inline). `sw.js`: Offline-Cache. `manifest.webmanifest` und Icons.
 - Online über GitHub Pages: https://aerdnanedak.github.io/moderationsdecks/ (Repo `AerdnaNedak/moderationsdecks`, öffentlich). Ein `git push` auf `main` veröffentlicht.
 - **Bei jeder App-Änderung** `CACHE` in `sw.js` und `VERSION` in `index.html` hochzählen, sonst bekommt das iPad die neue Fassung nicht sicher.
+- Updates: Die App fragt beim Öffnen und bei jeder Rückkehr nach einer neuen `sw.js`. Ist eine da, lädt sie neu, außer beim Moderieren oder Bearbeiten (dann Hinweis „Neu laden“). Der Service Worker holt eigene Dateien immer mit `cache: no-cache`.
 - Workshops liegen **nicht** im Repo, sondern privat in der Dropbox: `/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops/*.md`. Die App liest und schreibt sie über die Dropbox-API (PKCE, App-Schlüssel in `index.html`, Code wird manuell eingefügt).
 - `tools/pruefen.js <datei.md>`: prüft eine Workshop-Datei mit dem Leser der App.
 - `prototyp/`: der erste Prototyp als einzelne HTML-Datei.

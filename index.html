@@ -276,6 +276,8 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
 .pk .from { display: block; font-weight: 400; font-size: .88rem; color: var(--ink-2); margin-top: 2px; }
 .pk.on .box { background: var(--solid); border-color: var(--solid); color: var(--on-solid); }
 .pk.on .what { text-decoration: line-through; color: var(--ink-2); }
+.upd { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 45; display: flex; align-items: center; gap: 14px; background: var(--solid); color: var(--on-solid); padding: 10px 12px 10px 20px; border-radius: 12px; font-weight: 700; max-width: calc(100% - 32px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.upd button { border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 700; background: var(--lime); color: var(--on-lime); }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; background: var(--solid); color: var(--on-solid); padding: 12px 20px; border-radius: 10px; font-weight: 700; max-width: calc(100% - 32px); }
 </style>
 </head>
@@ -304,6 +306,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
 
 <div class="sheet" id="sheet" hidden><div class="sheet-box" id="sheetBox"></div></div>
 <div class="toast" id="toast" hidden></div>
+<div class="upd" id="upd" hidden><span>Neue Version verfügbar</span><button data-act="reload">Neu laden</button></div>
 
 <script>
 (function () {
@@ -312,7 +315,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
   var APP_KEY = 'prtle6jx22kouds';
   var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
-  var VERSION = '1.8';
+  var VERSION = '1.9';
 
   var SAMPLE = [
     '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
@@ -728,7 +731,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     }
     h += '</section>';
     h += '<section class="set-sec"><h3>Ansicht</h3><div class="row-actions"><button class="btn small" data-act="theme" data-theme-label>Ansicht: ' + themeLabel() + '</button></div></section>';
-    h += '<section class="set-sec"><h3>Als App auf dem iPad</h3><p>In Safari auf „Teilen“ tippen und „Zum Home-Bildschirm“ wählen. Dann startet das Moderationsdeck ohne Browserleisten und funktioniert auch offline.</p><p class="num" style="font-size:.85rem">Version ' + VERSION + '</p></section>';
+    h += '<section class="set-sec"><h3>Als App auf dem iPad</h3><p>In Safari auf „Teilen“ tippen und „Zum Home-Bildschirm“ wählen. Dann startet das Moderationsdeck ohne Browserleisten und funktioniert auch offline.</p><div class="row-actions"><span class="num" style="font-size:.9rem;align-self:center">Version ' + VERSION + '</span><button class="btn small" data-act="check-update">Nach Update suchen</button></div></section>';
     $('sheetBox').className = 'sheet-box form';
     $('sheetBox').innerHTML = h;
     $('sheet').hidden = false;
@@ -759,6 +762,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     requestWake(); render(true);
   }
   function exit() {
+    if (upd.pending) { location.reload(); return; }
     closeSheet(); $('pr').hidden = true; $('view').hidden = false; P = null;
     try { wake && wake.release(); } catch (e) {} wake = null;
     renderWs(); window.scrollTo(0, 0);
@@ -904,6 +908,8 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
       case 'font-': font(-0.1); break;
       case 'overview': openOverview(); break;
       case 'close': closeSheet(); break;
+      case 'reload': location.reload(); break;
+      case 'check-update': checkUpdate(true); break;
       case 'pack': {
         var pf = fileByKey(S.cur); if (!pf) break;
         var gi = b.getAttribute('data-g'), pd = deckOf(pf);
@@ -942,13 +948,36 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   }, { passive: true });
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState !== 'visible') return;
+    checkUpdate();
     if (P) requestWake();
     else if (Date.now() - store.lastSync > 60000) sync();
   });
   window.addEventListener('online', function () { renderStatus(); if (!P) sync(); });
   window.addEventListener('offline', renderStatus);
 
-  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function () {});
+  /* ---------- Updates: neue Fassung erkennen und laden ---------- */
+  var upd = { reg: null, pending: false, lastCheck: 0 };
+  function busy() { return !!P || !!S.edit || !$('sheet').hidden; }
+  function applyUpdate() {
+    if (busy()) { upd.pending = true; $('upd').hidden = false; }
+    else location.reload();
+  }
+  function checkUpdate(manual) {
+    if (!upd.reg || !navigator.onLine) { if (manual) toast(navigator.onLine ? 'Updates gibt es nur in der installierten App.' : 'Kein Internet. Versuch es später noch einmal.'); return; }
+    if (!manual && Date.now() - upd.lastCheck < 30000) return;
+    upd.lastCheck = Date.now();
+    upd.reg.update().then(function () {
+      if (manual) toast(upd.reg.installing || upd.reg.waiting ? 'Neue Version wird geladen …' : 'Du hast die neueste Version (' + VERSION + ').');
+    }, function () { if (manual) toast('Die Prüfung hat nicht geklappt. Versuch es später noch einmal.'); });
+  }
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    var hadController = !!navigator.serviceWorker.controller, reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadController || reloaded) { hadController = true; return; }
+      reloaded = true; applyUpdate();
+    });
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function (r) { upd.reg = r; checkUpdate(); }, function () {});
+  }
   applyTheme();
   renderLib();
   if (connected()) sync();

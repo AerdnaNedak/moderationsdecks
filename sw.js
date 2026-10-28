@@ -1,5 +1,5 @@
 /* Moderationsdeck: hält die App offline verfügbar. Workshops speichert die App selbst. */
-const CACHE = 'moderationsdeck-v10';
+const CACHE = 'moderationsdeck-v11';
 const FONTS = 'moderationsdeck-fonts';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
@@ -30,7 +30,8 @@ self.addEventListener('fetch', e => {
   }
 
   if (url.origin === self.location.origin) {
-    e.respondWith(fetch(e.request).then(res => {
+    // Immer beim Server nachfragen (nicht den 10-Minuten-Zwischenspeicher nehmen), offline aus dem Cache.
+    e.respondWith(fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }).then(res => {
       if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); }
       return res;
     }).catch(() => caches.match(e.request, { ignoreSearch: true }).then(hit => hit || caches.match('./index.html'))));
