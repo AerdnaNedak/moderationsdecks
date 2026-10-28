@@ -105,6 +105,10 @@ h1, h2 { text-wrap: balance; }
 .legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 6px; }
 .hero-actions .btn { min-height: 56px; padding: 0 28px; font-size: 1.05rem; }
+.hero-actions .pk-count { margin-left: 10px; font-size: .85rem; font-weight: 500; color: var(--ink-2); }
+.hero-actions .chev { margin-left: 8px; font-size: .8rem; }
+.hero-actions .btn.open { border-color: var(--ink); }
+.pack#pack { margin-top: 4px; margin-bottom: 18px; }
 .agenda h2 { font-size: .85rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
 .agenda ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .row { width: 100%; display: grid; grid-template-columns: 2.2rem 8.5rem minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); text-align: left; }
@@ -306,7 +310,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   /* Dropbox-App-Schlüssel (öffentlich, kein Geheimnis). Leer = noch nicht eingerichtet. */
   var APP_KEY = 'prtle6jx22kouds';
   var DEFAULT_FOLDER = '/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops';
-  var VERSION = '1.5';
+  var VERSION = '1.6';
 
   var SAMPLE = [
     '# KI im Büroalltag', 'Untertitel: Beispiel zum Ausprobieren', '',
@@ -592,20 +596,40 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
   }
 
   /* ---------- Ein Workshop ---------- */
-  function openWs(k) { S.cur = k; S.view = 'ws'; renderWs(); window.scrollTo(0, 0); }
+  function openWs(k) { if (S.cur !== k) S.packOpen = false; S.cur = k; S.view = 'ws'; renderWs(); window.scrollTo(0, 0); }
   function renderWs() {
     S.view = 'ws';
     var f = fileByKey(S.cur); if (!f) { renderLib(); return; }
     var d = deckOf(f), cs = d.cards, akt = cs.filter(function (c) { return c.art === 'aktiv'; }).length;
     var canEdit = connected() && !S.demo;
+    var packH = '', packN = 0, packDone = 0;
+    var mats = cs.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) { return x.c.material; });
+    var gen = d.material || [];
+    if (mats.length || gen.length) {
+      var done = packed[f.key] || [];
+      var nDone = packDone = gen.filter(function (t) { return done.indexOf(genId(t)) >= 0; }).length + mats.filter(function (x) { return done.indexOf(packId(x.c)) >= 0; }).length;
+      var item = function (on, attr, what, from) {
+        return '<li><button class="pk' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="pack" ' + attr + '><span class="box" aria-hidden="true">' + (on ? '✓' : '') + '</span>' +
+          '<span class="what">' + fmt(what) + (from ? '<span class="from">' + from + '</span>' : '') + '</span></button></li>';
+      };
+      packN = gen.length + mats.length;
+      packH = '<section class="pack" id="pack"><div class="pack-head"><h2>Material · ' + nDone + ' von ' + (gen.length + mats.length) + ' gepackt</h2>' +
+        (nDone ? '<button class="btn small" data-act="pack-reset">Haken zurücksetzen</button>' : '') + '</div>' +
+        (gen.length ? '<h3 class="pack-sub">Allgemein</h3><ul>' + gen.map(function (t, g) { return item(done.indexOf(genId(t)) >= 0, 'data-g="' + g + '"', t, ''); }).join('') + '</ul>' : '') +
+        (mats.length ? (gen.length ? '<h3 class="pack-sub">Pro Karte</h3>' : '') + '<ul>' + mats.map(function (x) {
+          return item(done.indexOf(packId(x.c)) >= 0, 'data-i="' + x.i + '"', x.c.material, 'Karte ' + (x.i + 1) + ' · ' + fmt(x.c.title));
+        }).join('') + '</ul>' : '') + '</section>';
+    }
     var h = '<header class="home-top"><button class="btn small" data-act="lib">‹ Alle Workshops</button><div class="top-actions"><span class="sync"></span><button class="btn small" data-act="theme" data-theme-label>Ansicht: ' + themeLabel() + '</button></div></header>';
     h += '<section class="hero">' +
       '<p class="eyebrow num">' + cs.length + ' Karten · ' + dur(total(cs)) + ' · ' + akt + '× TN aktiv</p>' +
       '<h1>' + fmt(d.title || f.name) + '</h1>' + (d.sub ? '<p class="sub">' + fmt(d.sub) + '</p>' : '') +
       (cs.length ? flow(cs) : '') +
       '<div class="legend"><span><i style="background:var(--lime)"></i>Ich spreche</span><span><i style="background:var(--violet)"></i>TN aktiv</span><span><i style="background:var(--falle)"></i>Achtung Falle</span></div>' +
-      (cs.length ? '<div class="hero-actions"><button class="btn solid" data-act="start" data-i="0">Moderieren</button><button class="btn" data-act="start-learn">Lernen</button></div>' : '') +
+      (cs.length || packN ? '<div class="hero-actions">' + (cs.length ? '<button class="btn solid" data-act="start" data-i="0">Moderieren</button><button class="btn" data-act="start-learn">Lernen</button>' : '') +
+        (packN ? '<button class="btn' + (S.packOpen ? ' open' : '') + '" data-act="pack-toggle" aria-expanded="' + !!S.packOpen + '">Material <span class="pk-count num">' + packDone + '/' + packN + '</span><span class="chev" aria-hidden="true">' + (S.packOpen ? '▴' : '▾') + '</span></button>' : '') + '</div>' : '') +
       '</section>';
+    if (S.packOpen && packH) h += packH;
     h += '<section class="agenda"><h2>Ablauf</h2>';
     if (!cs.length) h += '<p style="color:var(--ink-2)">Dieser Workshop hat noch keine Karten. Jede Karte beginnt mit „## Titel“.</p>';
     h += '<ol>' + cs.map(function (c, i) {
@@ -619,22 +643,6 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
     }).join('') + '</ol>';
     if (canEdit) h += '<div class="ws-tools"><button class="btn small" data-act="add-card">+ Karte hinzufügen</button><button class="btn small" data-act="edit-file">Ganze Datei bearbeiten</button></div>';
     h += '</section>';
-    var mats = cs.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) { return x.c.material; });
-    var gen = d.material || [];
-    if (mats.length || gen.length) {
-      var done = packed[f.key] || [];
-      var nDone = gen.filter(function (t) { return done.indexOf(genId(t)) >= 0; }).length + mats.filter(function (x) { return done.indexOf(packId(x.c)) >= 0; }).length;
-      var item = function (on, attr, what, from) {
-        return '<li><button class="pk' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="pack" ' + attr + '><span class="box" aria-hidden="true">' + (on ? '✓' : '') + '</span>' +
-          '<span class="what">' + fmt(what) + (from ? '<span class="from">' + from + '</span>' : '') + '</span></button></li>';
-      };
-      h += '<section class="pack"><div class="pack-head"><h2>Material · ' + nDone + ' von ' + (gen.length + mats.length) + ' gepackt</h2>' +
-        (nDone ? '<button class="btn small" data-act="pack-reset">Haken zurücksetzen</button>' : '') + '</div>' +
-        (gen.length ? '<h3 class="pack-sub">Allgemein</h3><ul>' + gen.map(function (t, g) { return item(done.indexOf(genId(t)) >= 0, 'data-g="' + g + '"', t, ''); }).join('') + '</ul>' : '') +
-        (mats.length ? (gen.length ? '<h3 class="pack-sub">Pro Karte</h3>' : '') + '<ul>' + mats.map(function (x) {
-          return item(done.indexOf(packId(x.c)) >= 0, 'data-i="' + x.i + '"', x.c.material, 'Karte ' + (x.i + 1) + ' · ' + fmt(x.c.title));
-        }).join('') + '</ul>' : '') + '</section>';
-    }
     $('view').innerHTML = h;
     renderStatus();
   }
@@ -903,6 +911,7 @@ details.help pre { white-space: pre-wrap; font: inherit; font-size: .92rem; marg
         var y = window.scrollY; renderWs(); window.scrollTo(0, y);
         break;
       }
+      case 'pack-toggle': { S.packOpen = !S.packOpen; var ty = window.scrollY; renderWs(); window.scrollTo(0, ty); break; }
       case 'pack-reset': { var rf = fileByKey(S.cur); if (rf) { delete packed[rf.key]; lsSet('md.packed', packed); var ry = window.scrollY; renderWs(); window.scrollTo(0, ry); } break; }
       case 'jump': closeSheet(); go(i, true); break;
     }
