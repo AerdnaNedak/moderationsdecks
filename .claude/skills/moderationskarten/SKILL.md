@@ -27,6 +27,7 @@ Sprich mit Andrea Deutsch, per du, ohne Fachjargon.
 # Titel des Workshops
 Untertitel: Kunde · Format · Dauer · Teilnehmende
 Termin: 9:30–13:00        (optional: Beginn–Ende dieses Termins)
+Leitprinzip: Name          (optional, nur im Word: danach Text- und „- “-Zeilen bis zum ersten Block)
 Material: allgemeines Material, das für den ganzen Tag gilt (eine Zeile pro Eintrag)
 
 ## Block 1 · Name des Blocks | 25 min

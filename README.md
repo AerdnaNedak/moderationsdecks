@@ -21,6 +21,7 @@ Die Workshops liegen bewusst nicht hier. Die App liest sie direkt aus der Dropbo
 # Titel des Workshops
 Untertitel: Anlass, Kunde, Datum
 Termin: 9:30–13:00                             (optional, Uhrzeiten für diesen Termin)
+Leitprinzip: Name                              (optional, erscheint nur im Word; Text und „- “-Punkte bis zum ersten Block)
 Material: allgemeines Material (vor der ersten Karte, eine Zeile pro Eintrag)
 
 ## Block 1 · Name des Blocks | 25 min        (Blöcke sind freiwillig)

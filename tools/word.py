@@ -34,7 +34,7 @@ const d = R.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const blocks = [];
 d.cards.forEach(c => { if (c.block && blocks.indexOf(c.block) < 0) blocks.push(c.block); });
 const out = {
-  title: d.title, sub: d.sub, material: d.material || [], termin: d.termin || null,
+  title: d.title, sub: d.sub, material: d.material || [], termin: d.termin || null, leit: d.leit || null,
   blocks: blocks.map(b => ({ title: b.title, minutes: b.minutes, goal: b.goal })),
   cards: d.cards.map(c => Object.assign({}, c, { block: c.block ? blocks.indexOf(c.block) : -1 })),
   sched: R.schedule ? R.schedule(d) : null,
@@ -204,6 +204,17 @@ def build(md, out):
         if sc['diff'] is not None:
             info += (' · ' + mn(sc['diff'] + sc['gaps']) + ' Min Luft') if sc['diff'] >= 0 else (' · Plan ist ' + mn(-sc['diff']) + ' Min zu lang')
     doc.text(info + '.', MUTED)
+
+    # Leitprinzip (nur im Word, nicht auf den Karten)
+    if w.get('leit'):
+        L = w['leit']
+        doc.h2('Leitprinzip' + (': ' + L['title'] if L['title'] else ''))
+        for t in L['text'][:1]:
+            doc.text(t, DARK)
+        for t in L['points']:
+            doc.bullet(t)
+        for t in L['text'][1:]:
+            doc.text(t)
 
     # Blöcke und Karten
     cur = None
