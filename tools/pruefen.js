@@ -9,7 +9,7 @@ const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 const js = html.match(/<script>\n([\s\S]*?)<\/script>/g).pop();
 const start = js.indexOf('function artOf'), end = js.indexOf('/* ---------- Zustand');
 if (start < 0 || end < 0) { console.error('Leser in index.html nicht gefunden.'); process.exit(2); }
-const reader = new Function(js.slice(start, end) + '\nreturn { parse: parse };')();
+const reader = new Function(js.slice(start, end) + '\nreturn { parse: parse, schedule: typeof schedule === "function" ? schedule : null, hm: typeof hm === "function" ? hm : null };')();
 
 let problems = 0;
 for (const file of process.argv.slice(2)) {
@@ -18,6 +18,12 @@ for (const file of process.argv.slice(2)) {
   console.log(`\n${path.basename(file)}\n  Titel: ${d.title || '(fehlt)'}\n  Untertitel: ${d.sub || '(keiner)'}\n  ${d.cards.length} Karten · ${total} min · Blöcke: ${d.blocks ? 'ja' : 'nein'}`);
   if (d.material && d.material.length) console.log(`  Allgemeines Material: ${d.material.length} Einträge`);
   if (!d.title) { console.log('  ! Kein Titel (Zeile "# Titel")'); problems++; }
+  const sc = reader.schedule ? reader.schedule(d) : null;
+  if (sc) {
+    const hm = reader.hm;
+    console.log(`  Termin: ${hm(sc.start)}${sc.end != null ? '–' + hm(sc.end) : ''} · Plan endet ${hm(sc.planEnd)}${sc.diff != null ? (sc.diff >= 0 ? ` · ${sc.diff + sc.gaps} Min Luft` : `  ! Plan ist ${-sc.diff} Min zu lang`) : ''}`);
+    sc.over.forEach(o => console.log(`  ! Vor „${o.title}“ um ${hm(o.at)} ist der Plan ${o.by} Min zu lang`));
+  }
   let prev;
   d.cards.forEach((c, i) => {
     if (c.block !== prev) {
@@ -38,7 +44,7 @@ for (const file of process.argv.slice(2)) {
     if (!c.minutes) warn.push('keine Dauer');
     if (!parts.length && c.art !== 'pause') warn.push('leer');
     if (load > 600) warn.push('sehr voll, scrollt auf dem iPad');
-    console.log(`    ${String(i + 1).padStart(2)} ${c.art.padEnd(8)} ${String(c.minutes || '-').padStart(3)}  ${c.title}  · ${parts.join(', ')}${warn.length ? '  ! ' + warn.join(', ') : ''}`);
+    console.log(`    ${String(i + 1).padStart(2)} ${c.art.padEnd(8)} ${String(c.minutes || '-').padStart(3)}${sc ? '  bis ' + reader.hm(sc.list[i].to).padStart(5) : ''}  ${c.title}  · ${parts.join(', ')}${warn.length ? '  ! ' + warn.join(', ') : ''}`);
     problems += warn.filter(w => w !== 'sehr voll, scrollt auf dem iPad').length;
   });
 }

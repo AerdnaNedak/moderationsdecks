@@ -19,6 +19,7 @@ Die Workshops liegen bewusst nicht hier. Die App liest sie direkt aus der Dropbo
 ```
 # Titel des Workshops
 Untertitel: Anlass, Kunde, Datum
+Termin: 9:30–13:00                             (optional, Uhrzeiten für diesen Termin)
 Material: allgemeines Material (vor der ersten Karte, eine Zeile pro Eintrag)
 
 ## Block 1 · Name des Blocks | 25 min        (Blöcke sind freiwillig)
@@ -33,6 +34,8 @@ Rahmen: Satz an die Gruppe, gehört zur Anleitung
 Notiz: nur für mich
 Material: erscheint in der Packliste
 ```
+
+Pause mit fester Uhrzeit: `### Pause | 15 min | Pause | 10:45`. Mit `Termin:` zeigt die App auf jeder Karte, bis wann sie fertig sein sollte (Plan bleibt fest; Luft und Überzug stehen auf der Workshop-Seite). In der App: „Termin festlegen“.
 
 Ohne Blöcke beginnt jede Karte mit `##` statt `###`.
 

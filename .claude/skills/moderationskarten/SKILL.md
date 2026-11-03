@@ -26,6 +26,7 @@ Sprich mit Andrea Deutsch, per du, ohne Fachjargon.
 ```
 # Titel des Workshops
 Untertitel: Kunde · Format · Dauer · Teilnehmende
+Termin: 9:30–13:00        (optional: Beginn–Ende dieses Termins)
 Material: allgemeines Material, das für den ganzen Tag gilt (eine Zeile pro Eintrag)
 
 ## Block 1 · Name des Blocks | 25 min
@@ -42,7 +43,8 @@ Material: was sie dafür braucht (erscheint in der Packliste)
 ```
 
 - Hat der Workshop keine Blöcke, beginnt jede Karte mit `##`, und es gibt keine `###`.
-- Eine Pause ist ein eigener Block mit einer einzigen Karte: `## Pause | 15 min`, darunter `### Pause | 15 min | Pause`.
+- Eine Pause ist ein eigener Block mit einer einzigen Karte: `## Pause | 15 min`, darunter `### Pause | 15 min | Pause`. Hat die Pause eine feste Uhrzeit, steht sie am Ende der Kartenzeile: `### Pause | 15 min | Pause | 10:45`.
+- `Termin:` setzt Andrea meist selbst in der App („Termin festlegen“). Steht in ihrem Konzept eine Uhrzeit für Beginn, Ende oder Pausen, übernimm sie. Die App rechnet daraus „bis …“ für jede Karte; `tools/pruefen.js` zeigt Luft oder Überzug.
 - Mehrere `>`-Zeilen sind erlaubt. Bei Einstieg und Schluss eines Redeteils: `> Einstieg: „…“` und `> Schluss: „…“`.
 - Schritte und Rahmen erscheinen in der Reihenfolge, in der sie in der Datei stehen.
 - `**fett**` wird fett angezeigt, sonst kein Markdown in den Zeilen.
