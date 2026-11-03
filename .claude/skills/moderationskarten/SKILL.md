@@ -76,3 +76,8 @@ Material: was sie dafür braucht (erscheint in der Packliste)
 - **Persönliches** aus Vorträgen gehört nur in diese private Datei, nie ins öffentliche Repository.
 
 Ein vollständiges Beispiel ist `merck-echt-sein.md` im Zielordner.
+
+## Word-Dokument erzeugen
+
+Sagt Andrea „mach mir das Word“ (oder Ähnliches), erzeuge es aus der Workshop-Datei:
+`python3 tools/word.py "<workshop.md>" "<ziel.docx>"` im Projektordner. Das Word hat den Stil ihrer bisherigen Workshop-Dokumente (Übersichtstabelle, Blöcke, DEINE WORTE, RAHMEN, ÜBUNG, FALLE, Packliste, Legende) und zeigt Uhrzeiten, wenn ein Termin gesetzt ist. Lege es in den Ordner, in dem ihre Unterlagen zu diesem Workshop liegen (frag, wenn unklar), und überschreibe dort keine von Hand gepflegte Word-Datei ohne Rückfrage. Die App-Datei ist das Original, Word wird daraus erzeugt.

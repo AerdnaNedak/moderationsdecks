@@ -16,6 +16,7 @@ Web-App (PWA) für Moderationskarten auf dem iPad. Andrea nutzt sie als Web-App 
 - Updates: Die App fragt beim Öffnen und bei jeder Rückkehr nach einer neuen `sw.js`. Ist eine da, lädt sie neu, außer beim Moderieren oder Bearbeiten (dann Hinweis „Neu laden“). Der Service Worker holt eigene Dateien immer mit `cache: no-cache`.
 - Workshops liegen **nicht** im Repo, sondern privat in der Dropbox: `/00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops/*.md`. Die App liest und schreibt sie über die Dropbox-API (PKCE, App-Schlüssel in `index.html`, Code wird manuell eingefügt).
 - `tools/pruefen.js <datei.md>`: prüft eine Workshop-Datei mit dem Leser der App.
+- `tools/word.py <datei.md> [ziel.docx]`: erzeugt Word im Stil von „Workshop 3.docx“ (python-docx, liest über node mit dem Leser der App). Die App-Datei ist das Original, Word ist Ausgabe.
 - Zeitplan: `Termin: 9:30–13:00` im Kopf der Datei, Pausen optional mit fester Uhrzeit in der Kartenzeile. `schedule()` rechnet „bis …“ pro Karte; der Plan bleibt fest (kein Neurechnen beim Moderieren, nur Planzeit, kein Abgleich mit der echten Uhr – so gewünscht). Übrige Zeit ist sichtbare Luft, Überzug wird gewarnt.
 - `prototyp/`: der erste Prototyp als einzelne HTML-Datei.
 

@@ -10,6 +10,7 @@ Moderationskarten für Workshops und Vorträge auf dem iPad: Moderationsmodus, L
 | `prototyp/` | der erste Prototyp als einzelne HTML-Datei |
 | `.claude/skills/moderationskarten/` | der Skill: macht aus Konzepten Workshop-Dateien |
 | `tools/pruefen.js` | prüft eine Workshop-Datei: `node tools/pruefen.js <datei.md>` |
+| `tools/word.py` | macht aus einer Workshop-Datei ein Word-Dokument: `python3 tools/word.py <datei.md> [ziel.docx]` |
 | Dropbox: `00 AK Business/03 Eigene Vorträge/Moderationsdeck/workshops/` | **die Workshops**, eine Markdown-Datei pro Workshop, privat |
 
 Die Workshops liegen bewusst nicht hier. Die App liest sie direkt aus der Dropbox und speichert sie auf dem iPad für offline.
